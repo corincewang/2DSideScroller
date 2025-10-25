@@ -15,6 +15,12 @@ public class CharacterController2D : MonoBehaviour
     private Rigidbody2D rb;
     private InputAction moveAction, jumpAction;
     private float moveDirection;
+
+    [Header("Ground Detection")]
+    public bool isGrounded = false;
+    public float groundCheckRadius;
+    public Vector2 groundCheckOffset;
+    public LayerMask groundLayerMask;
     
     void Start()
     {
@@ -35,7 +41,7 @@ public class CharacterController2D : MonoBehaviour
     {
         moveDirection = moveAction.ReadValue<Vector2>().x;
 
-        if (jumpAction.WasPressedThisFrame())
+        if (jumpAction.WasPressedThisFrame() && isGrounded)
         {
             rb.linearVelocityY = jumpHeight;
         }
@@ -43,6 +49,31 @@ public class CharacterController2D : MonoBehaviour
 
     void FixedUpdate()
     {
+        isGrounded = false;
+
+        Vector3 groundCheck = groundCheckOffset;
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position + groundCheck, groundCheckRadius, groundLayerMask);
+
+        if (colliders.Length > 0)
+        {
+            isGrounded = true;
+        }
+
         rb.linearVelocityX = moveDirection * speed;
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (isGrounded)
+        {
+            Gizmos.color = Color.green;
+        }
+        else
+        {
+            Gizmos.color = Color.red;
+        }
+
+        Vector3 groundCheck = groundCheckOffset;
+        Gizmos.DrawWireSphere(transform.position + groundCheck, groundCheckRadius);
     }
 }
