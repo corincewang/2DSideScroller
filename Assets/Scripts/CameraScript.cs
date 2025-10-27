@@ -5,6 +5,7 @@ public class CameraScript : MonoBehaviour
     public Transform player;
     public float smoothTime = 1f;
     public float currentVelocity = 0f;
+    public float currentVelocityY = 0f;
 
     void Start()
     {
@@ -24,6 +25,8 @@ public class CameraScript : MonoBehaviour
         {
             currentVelocity = 0;
         }
+        
+        cameraPosition.y = Mathf.SmoothDamp(cameraPosition.y, player.position.y, ref currentVelocityY, smoothTime);
         
         transform.position = cameraPosition;
     }

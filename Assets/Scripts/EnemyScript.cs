@@ -6,6 +6,7 @@ public class EnemyScript : MonoBehaviour
     private Rigidbody2D rb;
     private SpriteRenderer sprite;
     public bool facingLeft = true;
+    private GameObject playerToDestroy;
     
     void Start()
     {
@@ -13,7 +14,6 @@ public class EnemyScript : MonoBehaviour
         sprite = GetComponent<SpriteRenderer>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (facingLeft == sprite.flipX)
@@ -37,9 +37,19 @@ public class EnemyScript : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.name == "Player")
+        if (collision.gameObject.CompareTag("Player"))
         {
-            Destroy(collision.gameObject);
+            SoundManager.Steve.PlayEnemyHitSound();
+            Invoke(nameof(PlayDeathSoundAndDestroy), 0.5f);
+            playerToDestroy = collision.gameObject;
         }
+    }
+    
+
+    
+    void PlayDeathSoundAndDestroy()
+    {
+        SoundManager.Steve.PlayDeathSound();
+        GameManager.Gary.PlayerDeath(playerToDestroy);
     }
 }

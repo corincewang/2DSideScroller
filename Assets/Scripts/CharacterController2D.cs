@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 
     [RequireComponent(typeof(Rigidbody2D))]
     [RequireComponent(typeof(CapsuleCollider2D))]
+    
 public class CharacterController2D : MonoBehaviour
 {
     public float speed = 1f;
@@ -44,6 +45,7 @@ public class CharacterController2D : MonoBehaviour
         if (jumpAction.WasPressedThisFrame() && isGrounded)
         {
             rb.linearVelocityY = jumpHeight;
+            SoundManager.Steve.PlayJumpSound();
         }
     }
 
