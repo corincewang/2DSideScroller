@@ -6,13 +6,15 @@ public class CameraScript : MonoBehaviour
     public float smoothTime = 1f;
     public float currentVelocity = 0f;
     public float currentVelocityY = 0f;
+    public float yOffset = -1f;
+    public float maxY = 5f;
+    public float minY = 0f;
 
     void Start()
     {
         
     }
 
-    // Update is called once per frame
     void FixedUpdate()
     {
         Vector3 cameraPosition = transform.position;
@@ -26,7 +28,9 @@ public class CameraScript : MonoBehaviour
             currentVelocity = 0;
         }
         
-        cameraPosition.y = Mathf.SmoothDamp(cameraPosition.y, player.position.y, ref currentVelocityY, smoothTime);
+        float targetY = player.position.y + yOffset;
+        targetY = Mathf.Clamp(targetY, minY, maxY);
+        cameraPosition.y = Mathf.SmoothDamp(cameraPosition.y, targetY, ref currentVelocityY, smoothTime);
         
         transform.position = cameraPosition;
     }
