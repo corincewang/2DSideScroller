@@ -3,7 +3,8 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - TurnAround
   layers:
   - Default
   - TransparentFX
@@ -16,7 +17,7 @@ TagManager:
   - Ground
   - CameraBarrier
   - 
-  - 
+  - Behaviors
   - 
   - 
   - 
@@ -40,6 +41,9 @@ TagManager:
   m_SortingLayers:
   - name: Background
     uniqueID: 3874761749
+    locked: 0
+  - name: Middleground
+    uniqueID: 3590710037
     locked: 0
   - name: Platform
     uniqueID: 3870351263
