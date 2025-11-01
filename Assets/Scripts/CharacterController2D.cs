@@ -22,11 +22,17 @@ public class CharacterController2D : MonoBehaviour
     public float groundCheckRadius;
     public Vector2 groundCheckOffset;
     public LayerMask groundLayerMask;
-    
+
+    [Header("CharacterSprites and Animation")]
+    public Animator animator;
     void Start()
     {
         // define rigidbody
         rb = GetComponent<Rigidbody2D>();
+        if (animator == null)
+        {
+            animator = GetComponentInChildren<Animator>();
+        }
 
         rb.freezeRotation = true;
         rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
@@ -35,6 +41,7 @@ public class CharacterController2D : MonoBehaviour
         // define actions
         moveAction = InputSystem.actions.FindAction("Move");
         jumpAction = InputSystem.actions.FindAction("Jump");
+        
     }
 
     // Update is called once per frame
@@ -47,6 +54,10 @@ public class CharacterController2D : MonoBehaviour
             rb.linearVelocityY = jumpHeight;
             SoundManager.Steve.PlayJumpSound();
         }
+
+        animator.SetFloat("speed", Mathf.Abs(moveDirection));
+
+
     }
 
     void FixedUpdate()
