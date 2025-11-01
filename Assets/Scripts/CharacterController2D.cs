@@ -4,9 +4,9 @@ using UnityEngine.InputSystem;
 
 // based upon the 2DCharacterController from Sharp Coder Blog
 
-    [RequireComponent(typeof(Rigidbody2D))]
-    [RequireComponent(typeof(CapsuleCollider2D))]
-    
+[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(CapsuleCollider2D))]
+
 public class CharacterController2D : MonoBehaviour
 {
     public float speed = 1f;
@@ -25,6 +25,8 @@ public class CharacterController2D : MonoBehaviour
 
     [Header("CharacterSprites and Animation")]
     public Animator animator;
+    public bool facingRight = true;
+    public bool isAlive = true;
     void Start()
     {
         // define rigidbody
@@ -41,22 +43,52 @@ public class CharacterController2D : MonoBehaviour
         // define actions
         moveAction = InputSystem.actions.FindAction("Move");
         jumpAction = InputSystem.actions.FindAction("Jump");
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        moveDirection = moveAction.ReadValue<Vector2>().x;
+        if (isAlive)
+        {
+            moveDirection = moveAction.ReadValue<Vector2>().x;
+        }
+        else
+        {
+            moveDirection = 0;
+        }
 
-        if (jumpAction.WasPressedThisFrame() && isGrounded)
+
+        animator.SetFloat("Speed", Mathf.Abs(moveDirection));
+
+        if (jumpAction.WasPressedThisFrame() && isGrounded && isAlive)
         {
             rb.linearVelocityY = jumpHeight;
             SoundManager.Steve.PlayJumpSound();
+            animator.SetBool("Grounded", false);
+            animator.SetTrigger("JumpTrigger");
+        }
+        else
+        {
+            animator.SetBool("Grounded", isGrounded);
         }
 
-        animator.SetFloat("speed", Mathf.Abs(moveDirection));
 
+
+        if (moveDirection < -0.01f && facingRight)
+        {
+            facingRight = false;
+            Vector3 currentScale = transform.localScale;
+            currentScale.x *= -1f;
+            transform.localScale = currentScale;
+        }
+        else if (moveDirection > 0.01 && !facingRight)
+        {
+            facingRight = true;
+            Vector3 currentScale = transform.localScale;
+            currentScale.x *= -1f;
+            transform.localScale = currentScale;
+        }
 
     }
 
@@ -90,3 +122,9 @@ public class CharacterController2D : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position + groundCheck, groundCheckRadius);
     }
 }
+
+// OnCollisionEnter
+// if (!isAlive){return};
+
+// animator.setTrigger("Death");
+// isAlive = false;
