@@ -5,6 +5,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Gary;
     public bool levelCompleted = false;
+    public int score = 0;
     
     void Awake()
     {
@@ -26,6 +27,11 @@ public class GameManager : MonoBehaviour
     public void CompleteLevel()
     {
         levelCompleted = true;
+    }
+    
+    public void AddScore(int points)
+    {
+        score += points;
     }
     
     public void RestartLevel()

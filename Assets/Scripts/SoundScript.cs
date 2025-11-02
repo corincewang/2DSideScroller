@@ -8,6 +8,7 @@ public class SoundManager : MonoBehaviour
     public AudioClip playerDeathSound;
     public AudioClip playerJumpSound;
     public AudioClip enemyHitSound;
+    public AudioClip starSound;
     
     private AudioSource thisAudio;
 
@@ -48,5 +49,10 @@ public class SoundManager : MonoBehaviour
     public void PlayEnemyHitSound()
     {
         thisAudio.PlayOneShot(enemyHitSound);
+    }
+    
+    public void PlayStarSound()
+    {
+        thisAudio.PlayOneShot(starSound);
     }
 }
