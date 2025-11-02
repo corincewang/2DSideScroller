@@ -49,6 +49,9 @@ public class EnemyScript : MonoBehaviour
         
         if (collision.gameObject.CompareTag("Player"))
         {
+            CharacterController2D playerController = collision.gameObject.GetComponent<CharacterController2D>();
+            if (playerController && !playerController.isAlive) return;
+            
             ContactPoint2D contact = collision.contacts[0];
             
             if (contact.normal.y < -0.5f)
