@@ -32,7 +32,7 @@ public class CharacterController2D : MonoBehaviour
     public bool isAlive = true;
     void Start()
     {
-        // define rigidbody
+
         rb = GetComponent<Rigidbody2D>();
         if (animator == null)
         {
@@ -43,7 +43,6 @@ public class CharacterController2D : MonoBehaviour
         rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         rb.gravityScale = gravityScale;
 
-        // define actions
         moveAction = InputSystem.actions.FindAction("Move");
         jumpAction = InputSystem.actions.FindAction("Jump");
 
@@ -150,7 +149,6 @@ public class CharacterController2D : MonoBehaviour
         {
             ContactPoint2D contact = collision.contacts[0];
 
-            // Debug.Log("Normal "+ contact.normal);
 
             if (contact.normal.y > 0.8f)
             {
@@ -168,8 +166,6 @@ public class CharacterController2D : MonoBehaviour
             }
             else
             {
-                Debug.Log("Player was injured");
-                
                 isAlive = false;
                 animator.SetTrigger("Death");
                 GetComponent<Collider2D>().enabled = false;
