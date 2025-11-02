@@ -3,15 +3,19 @@ using UnityEngine;
 public class EnemyScript : MonoBehaviour
 {
     public float enemySpeed;
+    public bool isAlive = true;
     private Rigidbody2D rb;
     private SpriteRenderer sprite;
     public bool facingLeft = true;
     private GameObject playerToDestroy;
+
+    private Animator animator;
     
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         sprite = GetComponent<SpriteRenderer>();
+        animator = GetComponent<Animator>();
     }
 
     void Update()
@@ -24,7 +28,11 @@ public class EnemyScript : MonoBehaviour
 
     private void FixedUpdate()
     {
-        rb.linearVelocityX = facingLeft ? -enemySpeed : enemySpeed;
+        if (isAlive)
+        {
+            rb.linearVelocityX = facingLeft ? -enemySpeed : enemySpeed;
+        }
+        
     }
     
     void OnTriggerEnter2D(Collider2D collision)
@@ -45,7 +53,19 @@ public class EnemyScript : MonoBehaviour
         }
     }
     
+    public void PlayerKilledEnemy()
+    {
+        if (isAlive)
+        {
+            isAlive = false;
+            animator.SetTrigger("EnemyDeath");
+            rb.bodyType = RigidbodyType2D.Kinematic;
 
+            gameObject.layer = LayerMask.NameToLayer("NotForPlayer");
+            Destroy(gameObject, 1f);
+        }
+
+    }
     
     void PlayDeathSoundAndDestroy()
     {

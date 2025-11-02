@@ -121,10 +121,44 @@ public class CharacterController2D : MonoBehaviour
         Vector3 groundCheck = groundCheckOffset;
         Gizmos.DrawWireSphere(transform.position + groundCheck, groundCheckRadius);
     }
+
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (!isAlive)
+        {
+            return;
+        }
+        
+        if (collision.gameObject.tag == "Enemy")
+        {
+            ContactPoint2D contact = collision.contacts[0];
+
+            // Debug.Log("Normal "+ contact.normal);
+
+            if (contact.normal.y > 0.8f)
+            {
+                // we killed enemy
+                EnemyScript enemy = collision.gameObject.GetComponent<EnemyScript>();
+
+                if (enemy && isAlive)
+                {
+                    enemy.PlayerKilledEnemy();
+                }
+                else
+                {
+                    return;
+                }
+            }
+            else
+            {
+                Debug.Log("Player was injured");
+
+                animator.SetTrigger("Death");
+
+                isAlive = false;
+            }
+        }
+    }
 }
 
-// OnCollisionEnter
-// if (!isAlive){return};
 
-// animator.setTrigger("Death");
-// isAlive = false;
