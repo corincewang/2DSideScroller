@@ -12,6 +12,7 @@ public class CharacterController2D : MonoBehaviour
     public float speed = 1f;
     public float jumpHeight = 2f;
     public float gravityScale = 1f;
+    public float deathY = -10f;
 
     private Rigidbody2D rb;
     private InputAction moveAction, jumpAction;
@@ -51,6 +52,14 @@ public class CharacterController2D : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (transform.position.y < deathY && isAlive)
+        {
+            isAlive = false;
+            animator.SetTrigger("Death");
+            GetComponent<Collider2D>().enabled = false;
+            GameManager.Gary.PlayerDeath(gameObject);
+        }
+        
         if (jumpAction.WasPressedThisFrame() && isGrounded && isAlive)
         {
             rb.linearVelocityY = jumpHeight;
