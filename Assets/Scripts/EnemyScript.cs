@@ -45,8 +45,17 @@ public class EnemyScript : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
+        if (!isAlive) return;
+        
         if (collision.gameObject.CompareTag("Player"))
         {
+            ContactPoint2D contact = collision.contacts[0];
+            
+            if (contact.normal.y < -0.5f)
+            {
+                return;
+            }
+            
             SoundManager.Steve.PlayEnemyHitSound();
             Invoke(nameof(PlayDeathSoundAndDestroy), 0.5f);
             playerToDestroy = collision.gameObject;
@@ -58,13 +67,16 @@ public class EnemyScript : MonoBehaviour
         if (isAlive)
         {
             isAlive = false;
-            animator.SetTrigger("EnemyDeath");
+            rb.linearVelocity = Vector2.zero;
             rb.bodyType = RigidbodyType2D.Kinematic;
-
-            gameObject.layer = LayerMask.NameToLayer("NotForPlayer");
-            Destroy(gameObject, 1f);
+            
+            GetComponent<Collider2D>().enabled = false;
+            
+            animator.SetTrigger("EnemyDeath");
+            SoundManager.Steve.PlayEnemyHitSound();
+            
+            Destroy(gameObject, 0.6f);
         }
-
     }
     
     void PlayDeathSoundAndDestroy()

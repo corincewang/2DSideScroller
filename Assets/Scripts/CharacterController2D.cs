@@ -16,6 +16,8 @@ public class CharacterController2D : MonoBehaviour
     private Rigidbody2D rb;
     private InputAction moveAction, jumpAction;
     private float moveDirection;
+    private float jumpInputLockTime = 0f;
+    public float jumpLockDuration = 0.1f;
 
     [Header("Ground Detection")]
     public bool isGrounded = false;
@@ -49,7 +51,26 @@ public class CharacterController2D : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (isAlive)
+        if (jumpAction.WasPressedThisFrame() && isGrounded && isAlive)
+        {
+            rb.linearVelocityY = jumpHeight;
+            SoundManager.Steve.PlayJumpSound();
+            animator.SetBool("Grounded", false);
+            animator.SetTrigger("JumpTrigger");
+            jumpInputLockTime = jumpLockDuration;
+            moveDirection = 0;
+        }
+        else
+        {
+            animator.SetBool("Grounded", isGrounded);
+        }
+
+        if (jumpInputLockTime > 0)
+        {
+            jumpInputLockTime -= Time.deltaTime;
+            moveDirection = 0;
+        }
+        else if (isAlive)
         {
             moveDirection = moveAction.ReadValue<Vector2>().x;
         }
@@ -58,20 +79,7 @@ public class CharacterController2D : MonoBehaviour
             moveDirection = 0;
         }
 
-
         animator.SetFloat("Speed", Mathf.Abs(moveDirection));
-
-        if (jumpAction.WasPressedThisFrame() && isGrounded && isAlive)
-        {
-            rb.linearVelocityY = jumpHeight;
-            SoundManager.Steve.PlayJumpSound();
-            animator.SetBool("Grounded", false);
-            animator.SetTrigger("JumpTrigger");
-        }
-        else
-        {
-            animator.SetBool("Grounded", isGrounded);
-        }
 
 
 

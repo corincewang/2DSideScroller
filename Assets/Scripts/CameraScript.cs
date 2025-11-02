@@ -7,8 +7,10 @@ public class CameraScript : MonoBehaviour
     public float currentVelocity = 0f;
     public float currentVelocityY = 0f;
     public float yOffset = -1f;
-    public float maxY = 5f;
-    public float minY = 0f;
+    public float maxY = 3.5f;
+    public float minY = 2f;
+    public float minX = 0.68f;
+    public float maxX = 133f;
 
     void Start()
     {
@@ -19,14 +21,8 @@ public class CameraScript : MonoBehaviour
     {
         Vector3 cameraPosition = transform.position;
 
-        if (player.position.x > cameraPosition.x)
-        {
-            cameraPosition.x = Mathf.SmoothDamp(cameraPosition.x, player.position.x, ref currentVelocity, smoothTime);
-        }
-        else
-        {
-            currentVelocity = 0;
-        }
+        float targetX = Mathf.Clamp(player.position.x, minX, maxX);
+        cameraPosition.x = Mathf.SmoothDamp(cameraPosition.x, targetX, ref currentVelocity, smoothTime);
         
         float targetY = player.position.y + yOffset;
         targetY = Mathf.Clamp(targetY, minY, maxY);
