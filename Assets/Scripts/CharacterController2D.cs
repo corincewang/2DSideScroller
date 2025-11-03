@@ -150,7 +150,7 @@ public class CharacterController2D : MonoBehaviour
             ContactPoint2D contact = collision.contacts[0];
 
 
-            if (contact.normal.y > 0.8f)
+            if (contact.normal.y > 0.7f)
             {
                 // we killed enemy
                 EnemyScript enemy = collision.gameObject.GetComponent<EnemyScript>();

@@ -11,3 +11,6 @@ https://assetstore.unity.com/packages/audio/sound-fx/rpg-essentials-sound-effect
 Background Music: 
 25 Fantasy RPG Game Tracks Music by alkakrab (Unity Asset Store)
 https://assetstore.unity.com/zh-CN/publishers/67560
+
+Player Character and Some Enemies (my_art):
+art created by myself earlier, all are pixel style fan-art based on RPG Game FINAL FANTASY XIV.
