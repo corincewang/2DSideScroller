@@ -9,6 +9,7 @@ public class SoundManager : MonoBehaviour
     public AudioClip playerJumpSound;
     public AudioClip enemyHitSound;
     public AudioClip starSound;
+    public AudioClip levelCompleteSound;
     
     private AudioSource thisAudio;
 
@@ -54,5 +55,13 @@ public class SoundManager : MonoBehaviour
     public void PlayStarSound()
     {
         thisAudio.PlayOneShot(starSound);
+    }
+    
+    public void PlayLevelCompleteSound()
+    {
+        if (levelCompleteSound != null)
+        {
+            thisAudio.PlayOneShot(levelCompleteSound);
+        }
     }
 }

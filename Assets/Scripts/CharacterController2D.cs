@@ -2,8 +2,6 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
-// based upon the 2DCharacterController from Sharp Coder Blog
-
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(CapsuleCollider2D))]
 
@@ -48,9 +46,10 @@ public class CharacterController2D : MonoBehaviour
 
     }
 
-    // Update is called once per frame
     void Update()
     {
+        bool levelCompleted = GameManager.Gary != null && GameManager.Gary.levelCompleted;
+        
         if (transform.position.y < deathY && isAlive)
         {
             isAlive = false;
@@ -59,7 +58,7 @@ public class CharacterController2D : MonoBehaviour
             GameManager.Gary.PlayerDeath(gameObject);
         }
         
-        if (jumpAction.WasPressedThisFrame() && isGrounded && isAlive)
+        if (jumpAction.WasPressedThisFrame() && isGrounded && isAlive && !levelCompleted)
         {
             rb.linearVelocityY = jumpHeight;
             SoundManager.Steve.PlayJumpSound();
@@ -78,7 +77,7 @@ public class CharacterController2D : MonoBehaviour
             jumpInputLockTime -= Time.deltaTime;
             moveDirection = 0;
         }
-        else if (isAlive)
+        else if (isAlive && !levelCompleted)
         {
             moveDirection = moveAction.ReadValue<Vector2>().x;
         }
@@ -110,6 +109,8 @@ public class CharacterController2D : MonoBehaviour
 
     void FixedUpdate()
     {
+        bool levelCompleted = GameManager.Gary != null && GameManager.Gary.levelCompleted;
+        
         isGrounded = false;
 
         Vector3 groundCheck = groundCheckOffset;
@@ -118,6 +119,11 @@ public class CharacterController2D : MonoBehaviour
         if (colliders.Length > 0)
         {
             isGrounded = true;
+        }
+
+        if (levelCompleted)
+        {
+            moveDirection = 0;
         }
 
         rb.linearVelocityX = moveDirection * speed;
@@ -152,7 +158,6 @@ public class CharacterController2D : MonoBehaviour
 
             if (contact.normal.y > 0.7f)
             {
-                // we killed enemy
                 EnemyScript enemy = collision.gameObject.GetComponent<EnemyScript>();
 
                 if (enemy && isAlive)
@@ -169,6 +174,7 @@ public class CharacterController2D : MonoBehaviour
                 isAlive = false;
                 animator.SetTrigger("Death");
                 GetComponent<Collider2D>().enabled = false;
+                GameManager.Gary.PlayerDeath(gameObject);
             }
         }
     }

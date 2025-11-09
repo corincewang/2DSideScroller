@@ -59,9 +59,8 @@ public class EnemyScript : MonoBehaviour
                 return;
             }
             
-            SoundManager.Steve.PlayEnemyHitSound();
-            Invoke(nameof(PlayDeathSoundAndDestroy), 0.5f);
             playerToDestroy = collision.gameObject;
+            PlayDeathSoundAndDestroy();
         }
     }
     
