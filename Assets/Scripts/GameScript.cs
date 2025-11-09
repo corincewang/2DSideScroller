@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour
     public bool isGameOver = false;
     
     private GameObject currentPlayer;
+    private Vector3? checkpointPosition = null;
     
     void Awake()
     {
@@ -40,6 +41,8 @@ public class GameManager : MonoBehaviour
         currentLevel = SceneManager.GetActiveScene().buildIndex;
         currentPlayer = GameObject.FindGameObjectWithTag("Player");
         ResetLives();
+        ResetCheckpoint();
+        ResetAllCheckpoints();
     }
     
     void OnEnable()
@@ -56,6 +59,17 @@ public class GameManager : MonoBehaviour
     {
         currentPlayer = GameObject.FindGameObjectWithTag("Player");
         ResetLives();
+        ResetCheckpoint();
+        ResetAllCheckpoints();
+    }
+    
+    void ResetAllCheckpoints()
+    {
+        LevelCheckpoint[] checkpoints = FindObjectsOfType<LevelCheckpoint>();
+        foreach (LevelCheckpoint checkpoint in checkpoints)
+        {
+            checkpoint.ResetCheckpoint();
+        }
     }
     
     public void PlayerDeath(GameObject player)
@@ -69,6 +83,12 @@ public class GameManager : MonoBehaviour
         }
         
         currentLives--;
+        
+        UIManager uiManager = FindObjectOfType<UIManager>();
+        if (uiManager != null && currentLives > 0)
+        {
+            uiManager.ShowOops();
+        }
         
         if (currentLives > 0)
         {
@@ -117,7 +137,14 @@ public class GameManager : MonoBehaviour
         
         if (playerToRespawn != null)
         {
-            LevelCheckpoint.currentStartPoint.RespawnPlayer(playerToRespawn);
+            if (checkpointPosition.HasValue)
+            {
+                RespawnPlayerAtPosition(playerToRespawn, checkpointPosition.Value);
+            }
+            else
+            {
+                LevelCheckpoint.currentStartPoint.RespawnPlayer(playerToRespawn);
+            }
             currentPlayer = playerToRespawn;
             
             OnPlayerRespawn?.Invoke();
@@ -170,6 +197,39 @@ public class GameManager : MonoBehaviour
     {
         ResetLevelState();
         ResetLives();
+        ResetCheckpoint();
+        ResetAllCheckpoints();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+    
+    public void SetCheckpointPosition(Vector3 position)
+    {
+        checkpointPosition = position;
+    }
+    
+    void ResetCheckpoint()
+    {
+        checkpointPosition = null;
+    }
+    
+    void RespawnPlayerAtPosition(GameObject player, Vector3 position)
+    {
+        if (player != null)
+        {
+            player.transform.position = position;
+            
+            CharacterController2D controller = player.GetComponent<CharacterController2D>();
+            if (controller != null)
+            {
+                controller.isAlive = true;
+                controller.GetComponent<Collider2D>().enabled = true;
+            }
+            
+            Rigidbody2D rb = player.GetComponent<Rigidbody2D>();
+            if (rb != null)
+            {
+                rb.linearVelocity = Vector2.zero;
+            }
+        }
     }
 }

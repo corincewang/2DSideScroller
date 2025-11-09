@@ -49,6 +49,12 @@ public class CharacterController2D : MonoBehaviour
     void Update()
     {
         bool levelCompleted = GameManager.Gary != null && GameManager.Gary.levelCompleted;
+        bool countdownActive = false;
+        UIManager uiManager = FindObjectOfType<UIManager>();
+        if (uiManager != null)
+        {
+            countdownActive = uiManager.isCountdownActive;
+        }
         
         if (transform.position.y < deathY && isAlive)
         {
@@ -58,7 +64,7 @@ public class CharacterController2D : MonoBehaviour
             GameManager.Gary.PlayerDeath(gameObject);
         }
         
-        if (jumpAction.WasPressedThisFrame() && isGrounded && isAlive && !levelCompleted)
+        if (jumpAction.WasPressedThisFrame() && isGrounded && isAlive && !levelCompleted && !countdownActive)
         {
             rb.linearVelocityY = jumpHeight;
             SoundManager.Steve.PlayJumpSound();
@@ -77,7 +83,7 @@ public class CharacterController2D : MonoBehaviour
             jumpInputLockTime -= Time.deltaTime;
             moveDirection = 0;
         }
-        else if (isAlive && !levelCompleted)
+        else if (isAlive && !levelCompleted && !countdownActive)
         {
             moveDirection = moveAction.ReadValue<Vector2>().x;
         }
@@ -110,6 +116,12 @@ public class CharacterController2D : MonoBehaviour
     void FixedUpdate()
     {
         bool levelCompleted = GameManager.Gary != null && GameManager.Gary.levelCompleted;
+        bool countdownActive = false;
+        UIManager uiManager = FindObjectOfType<UIManager>();
+        if (uiManager != null)
+        {
+            countdownActive = uiManager.isCountdownActive;
+        }
         
         isGrounded = false;
 
@@ -121,7 +133,7 @@ public class CharacterController2D : MonoBehaviour
             isGrounded = true;
         }
 
-        if (levelCompleted)
+        if (levelCompleted || countdownActive)
         {
             moveDirection = 0;
         }
