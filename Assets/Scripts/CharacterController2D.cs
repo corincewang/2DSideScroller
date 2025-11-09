@@ -174,6 +174,7 @@ public class CharacterController2D : MonoBehaviour
                 isAlive = false;
                 animator.SetTrigger("Death");
                 GetComponent<Collider2D>().enabled = false;
+                SoundManager.Steve.PlayDeathSound();
                 GameManager.Gary.PlayerDeath(gameObject);
             }
         }

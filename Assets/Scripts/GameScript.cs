@@ -15,6 +15,11 @@ public class GameManager : MonoBehaviour
     public GameObject playerPrefab;
     public float respawnDelay = 1f;
     
+    [Header("Lives System")]
+    public int maxLives = 3;
+    public int currentLives = 3;
+    public bool isGameOver = false;
+    
     private GameObject currentPlayer;
     
     void Awake()
@@ -34,6 +39,7 @@ public class GameManager : MonoBehaviour
     {
         currentLevel = SceneManager.GetActiveScene().buildIndex;
         currentPlayer = GameObject.FindGameObjectWithTag("Player");
+        ResetLives();
     }
     
     void OnEnable()
@@ -49,16 +55,39 @@ public class GameManager : MonoBehaviour
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         currentPlayer = GameObject.FindGameObjectWithTag("Player");
+        ResetLives();
     }
     
     public void PlayerDeath(GameObject player)
     {
+        if (isGameOver) return;
+        
         currentPlayer = player;
         if (player != null)
         {
             player.SetActive(false);
         }
-        Invoke(nameof(RespawnPlayer), respawnDelay);
+        
+        currentLives--;
+        
+        if (currentLives > 0)
+        {
+            Invoke(nameof(RespawnPlayer), respawnDelay);
+        }
+        else
+        {
+            isGameOver = true;
+            Invoke(nameof(ShowGameOver), respawnDelay);
+        }
+    }
+    
+    void ShowGameOver()
+    {
+        UIManager uiManager = FindObjectOfType<UIManager>();
+        if (uiManager != null)
+        {
+            uiManager.ShowGameOver();
+        }
     }
     
     public System.Action OnPlayerRespawn;
@@ -112,6 +141,13 @@ public class GameManager : MonoBehaviour
     public void ResetLevelState()
     {
         levelCompleted = false;
+        isGameOver = false;
+    }
+    
+    public void ResetLives()
+    {
+        currentLives = maxLives;
+        isGameOver = false;
     }
     
     public void LoadNextLevel()
@@ -133,6 +169,7 @@ public class GameManager : MonoBehaviour
     public void RestartLevel()
     {
         ResetLevelState();
+        ResetLives();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

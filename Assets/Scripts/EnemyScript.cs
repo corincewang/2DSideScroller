@@ -7,7 +7,6 @@ public class EnemyScript : MonoBehaviour
     private Rigidbody2D rb;
     private SpriteRenderer sprite;
     public bool facingLeft = true;
-    private GameObject playerToDestroy;
 
     private Animator animator;
     
@@ -58,9 +57,6 @@ public class EnemyScript : MonoBehaviour
             {
                 return;
             }
-            
-            playerToDestroy = collision.gameObject;
-            PlayDeathSoundAndDestroy();
         }
     }
     
@@ -79,11 +75,5 @@ public class EnemyScript : MonoBehaviour
             
             Destroy(gameObject, 0.6f);
         }
-    }
-    
-    void PlayDeathSoundAndDestroy()
-    {
-        SoundManager.Steve.PlayDeathSound();
-        GameManager.Gary.PlayerDeath(playerToDestroy);
     }
 }
