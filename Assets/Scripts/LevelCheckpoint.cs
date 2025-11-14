@@ -70,11 +70,11 @@ public class LevelCheckpoint : MonoBehaviour
             playerSpawnPoint = transform;
         }
         
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player != null)
-        {
-            player.transform.position = playerSpawnPoint.position;
-        }
+        // GameObject player = GameObject.FindGameObjectWithTag("Player");
+        // if (player != null)
+        // {
+        //     player.transform.position = playerSpawnPoint.position;
+        // }
     }
     
     public void RespawnPlayer(GameObject player)
