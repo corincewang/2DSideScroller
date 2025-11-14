@@ -47,10 +47,7 @@ public class FerryPlatform : MonoBehaviour
         transform.position = initialPosition;
         transform.rotation = initialRotation;
         
-        if (animator != null)
-        {
-            animator.Rebind();
-            animator.Update(0f);
-        }
+        animator.Rebind();
+        animator.Update(0f);
     }
 }

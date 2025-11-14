@@ -20,6 +20,11 @@ public class GameManager : MonoBehaviour
     public int currentLives = 3;
     public bool isGameOver = false;
     
+    [Header("Timer System")]
+    public float levelTimeLimit = 120f;
+    public float currentTime = 0f;
+    public bool isTimerRunning = false;
+    
     private GameObject currentPlayer;
     private Vector3? checkpointPosition = null;
     
@@ -43,6 +48,21 @@ public class GameManager : MonoBehaviour
         ResetLives();
         ResetCheckpoint();
         ResetAllCheckpoints();
+        currentTime = 0f;
+        isTimerRunning = false;
+    }
+    
+    void Update()
+    {
+        if (isTimerRunning && !levelCompleted && !isGameOver)
+        {
+            currentTime += Time.deltaTime;
+            
+            if (currentTime >= levelTimeLimit)
+            {
+                TimeUp();
+            }
+        }
     }
     
     void OnEnable()
@@ -61,6 +81,8 @@ public class GameManager : MonoBehaviour
         ResetLives();
         ResetCheckpoint();
         ResetAllCheckpoints();
+        currentTime = 0f;
+        isTimerRunning = false;
     }
     
     void ResetAllCheckpoints()
@@ -77,21 +99,14 @@ public class GameManager : MonoBehaviour
         if (isGameOver) return;
         
         currentPlayer = player;
-        if (player != null)
-        {
-            player.SetActive(false);
-        }
+        player.SetActive(false);
         
         currentLives--;
         
         UIManager uiManager = FindObjectOfType<UIManager>();
-        if (uiManager != null && currentLives > 0)
-        {
-            uiManager.ShowOops();
-        }
-        
         if (currentLives > 0)
         {
+            uiManager.ShowOops();
             Invoke(nameof(RespawnPlayer), respawnDelay);
         }
         else
@@ -104,10 +119,7 @@ public class GameManager : MonoBehaviour
     void ShowGameOver()
     {
         UIManager uiManager = FindObjectOfType<UIManager>();
-        if (uiManager != null)
-        {
-            uiManager.ShowGameOver();
-        }
+        uiManager.ShowGameOver();
     }
     
     public System.Action OnPlayerRespawn;
@@ -158,6 +170,7 @@ public class GameManager : MonoBehaviour
     public void CompleteLevel()
     {
         levelCompleted = true;
+        StopTimer();
     }
     
     public void AddScore(int points)
@@ -169,6 +182,36 @@ public class GameManager : MonoBehaviour
     {
         levelCompleted = false;
         isGameOver = false;
+    }
+    
+    public void StartTimer()
+    {
+        currentTime = 0f;
+        isTimerRunning = true;
+    }
+    
+    void StopTimer()
+    {
+        isTimerRunning = false;
+    }
+    
+    void TimeUp()
+    {
+        StopTimer();
+        isGameOver = true;
+        
+        if (currentPlayer != null)
+        {
+            CharacterController2D controller = currentPlayer.GetComponent<CharacterController2D>();
+            if (controller != null && controller.isAlive)
+            {
+                controller.isAlive = false;
+                controller.GetComponent<Collider2D>().enabled = false;
+                controller.animator.SetTrigger("Death");
+            }
+        }
+        
+        Invoke(nameof(ShowGameOver), respawnDelay);
     }
     
     public void ResetLives()
@@ -199,6 +242,8 @@ public class GameManager : MonoBehaviour
         ResetLives();
         ResetCheckpoint();
         ResetAllCheckpoints();
+        score = 0;
+        StartTimer();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
     
@@ -214,22 +259,13 @@ public class GameManager : MonoBehaviour
     
     void RespawnPlayerAtPosition(GameObject player, Vector3 position)
     {
-        if (player != null)
-        {
-            player.transform.position = position;
-            
-            CharacterController2D controller = player.GetComponent<CharacterController2D>();
-            if (controller != null)
-            {
-                controller.isAlive = true;
-                controller.GetComponent<Collider2D>().enabled = true;
-            }
-            
-            Rigidbody2D rb = player.GetComponent<Rigidbody2D>();
-            if (rb != null)
-            {
-                rb.linearVelocity = Vector2.zero;
-            }
-        }
+        player.transform.position = position;
+        
+        CharacterController2D controller = player.GetComponent<CharacterController2D>();
+        controller.isAlive = true;
+        controller.GetComponent<Collider2D>().enabled = true;
+        
+        Rigidbody2D rb = player.GetComponent<Rigidbody2D>();
+        rb.linearVelocity = Vector2.zero;
     }
 }

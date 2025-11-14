@@ -12,11 +12,6 @@ public class CameraScript : MonoBehaviour
     public float minX = 0.68f;
     public float maxX = 133f;
 
-    void Start()
-    {
-        
-    }
-
     void FixedUpdate()
     {
         Vector3 cameraPosition = transform.position;

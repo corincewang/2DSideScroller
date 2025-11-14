@@ -31,7 +31,6 @@ public class EnemyScript : MonoBehaviour
         {
             rb.linearVelocityX = facingLeft ? -enemySpeed : enemySpeed;
         }
-        
     }
     
     void OnTriggerEnter2D(Collider2D collision)
@@ -54,9 +53,7 @@ public class EnemyScript : MonoBehaviour
             ContactPoint2D contact = collision.contacts[0];
             
             if (contact.normal.y < -0.5f)
-            {
                 return;
-            }
         }
     }
     

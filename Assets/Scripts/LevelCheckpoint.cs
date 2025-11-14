@@ -66,9 +66,7 @@ public class LevelCheckpoint : MonoBehaviour
     void SetupStartPoint()
     {
         if (playerSpawnPoint == null)
-        {
             playerSpawnPoint = transform;
-        }
         
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)
@@ -80,50 +78,29 @@ public class LevelCheckpoint : MonoBehaviour
     public void RespawnPlayer(GameObject player)
     {
         if (playerSpawnPoint == null)
-        {
             playerSpawnPoint = transform;
-        }
         
-        if (player != null)
-        {
-            player.transform.position = playerSpawnPoint.position;
-            
-            CharacterController2D controller = player.GetComponent<CharacterController2D>();
-            if (controller != null)
-            {
-                controller.isAlive = true;
-                controller.GetComponent<Collider2D>().enabled = true;
-            }
-            
-            Rigidbody2D rb = player.GetComponent<Rigidbody2D>();
-            if (rb != null)
-            {
-                rb.linearVelocity = Vector2.zero;
-            }
-        }
+        player.transform.position = playerSpawnPoint.position;
+        
+        CharacterController2D controller = player.GetComponent<CharacterController2D>();
+        controller.isAlive = true;
+        controller.GetComponent<Collider2D>().enabled = true;
+        
+        Rigidbody2D rb = player.GetComponent<Rigidbody2D>();
+        rb.linearVelocity = Vector2.zero;
     }
     
     void SetupEndPoint()
     {
-        if (checkpointCollider != null)
-        {
-            checkpointCollider.isTrigger = isTrigger;
-        }
+        checkpointCollider.isTrigger = isTrigger;
     }
     
     void SetupRespawnCheckpoint()
     {
-        if (checkpointCollider != null)
-        {
-            if (useTriggerForCheckpoint)
-            {
-                checkpointCollider.isTrigger = true;
-            }
-            else
-            {
-                checkpointCollider.enabled = false;
-            }
-        }
+        if (useTriggerForCheckpoint)
+            checkpointCollider.isTrigger = true;
+        else
+            checkpointCollider.enabled = false;
     }
     
     void Update()

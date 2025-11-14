@@ -7,6 +7,7 @@ public class UIManager : MonoBehaviour
     [Header("Info")]
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI livesText;
+    public TextMeshProUGUI timerText;
     
     [Header("Level Complete UI")]
     public GameObject levelCompletePanel;
@@ -44,62 +45,21 @@ public class UIManager : MonoBehaviour
     
     public bool isCountdownActive = true;
     
-    void Awake()
-    {
-        if (levelCompletePanel != null)
-        {
-            levelCompletePanel.SetActive(false);
-        }
-        
-        if (successMessageText != null)
-        {
-            successMessageText.gameObject.SetActive(false);
-        }
-        
-        if (gameOverPanel != null)
-        {
-            gameOverPanel.SetActive(false);
-        }
-        
-        if (gameOverMessageText != null)
-        {
-            gameOverMessageText.gameObject.SetActive(false);
-        }
-        
-        if (readyPanel != null)
-        {
-            readyPanel.SetActive(false);
-        }
-        
-        if (readyMessageText != null)
-        {
-            readyMessageText.gameObject.SetActive(false);
-        }
-        
-        if (oopsPanel != null)
-        {
-            oopsPanel.SetActive(false);
-        }
-        
-        if (oopsMessageText != null)
-        {
-            oopsMessageText.gameObject.SetActive(false);
-        }
-    }
-    
     void Start()
     {
-        if (nextLevelButton != null)
-        {
-            nextLevelButton.onClick.AddListener(NextLevel);
-            SetButtonText(nextLevelButton, nextLevelButtonText);
-        }
+        levelCompletePanel.SetActive(false);
+        successMessageText.gameObject.SetActive(false);
+        gameOverPanel.SetActive(false);
+        gameOverMessageText.gameObject.SetActive(false);
+        oopsPanel.SetActive(false);
+        oopsMessageText.gameObject.SetActive(false);
+        readyPanel.SetActive(false);
+        readyMessageText.gameObject.SetActive(false);
         
-        if (gameOverRestartButton != null)
-        {
-            gameOverRestartButton.onClick.AddListener(RestartGame);
-            SetButtonText(gameOverRestartButton, restartButtonText);
-        }
+        nextLevelButton.onClick.AddListener(NextLevel);
+        SetButtonText(nextLevelButton, nextLevelButtonText);
+        gameOverRestartButton.onClick.AddListener(RestartGame);
+        SetButtonText(gameOverRestartButton, restartButtonText);
         
         Invoke(nameof(ShowReady), 0.1f);
     }
@@ -116,6 +76,15 @@ public class UIManager : MonoBehaviour
     
     void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode)
     {
+        levelCompletePanel.SetActive(false);
+        successMessageText.gameObject.SetActive(false);
+        gameOverPanel.SetActive(false);
+        gameOverMessageText.gameObject.SetActive(false);
+        oopsPanel.SetActive(false);
+        oopsMessageText.gameObject.SetActive(false);
+        readyPanel.SetActive(false);
+        readyMessageText.gameObject.SetActive(false);
+        
         isLevelCompleteShowing = false;
         isGameOverShowing = false;
         isReadyShowing = false;
@@ -126,27 +95,27 @@ public class UIManager : MonoBehaviour
     
     void SetButtonText(Button button, string text)
     {
-        if (button == null) return;
-        
         TextMeshProUGUI buttonText = button.GetComponentInChildren<TextMeshProUGUI>();
-        if (buttonText != null)
-        {
-            buttonText.text = text;
-        }
+        buttonText.text = text;
     }
     
     void Update()
     {
         if (GameManager.Gary != null)
         {
-            if (scoreText != null)
-            {
-                scoreText.text = "Score: " + GameManager.Gary.score;
-            }
+            scoreText.text = "Score: " + GameManager.Gary.score;
+            livesText.text = "Lives: " + GameManager.Gary.currentLives;
             
-            if (livesText != null)
+            if (GameManager.Gary.isTimerRunning)
             {
-                livesText.text = "Lives: " + GameManager.Gary.currentLives;
+                float remainingTime = GameManager.Gary.levelTimeLimit - GameManager.Gary.currentTime;
+                if (remainingTime < 0) remainingTime = 0;
+                int seconds = Mathf.FloorToInt(remainingTime);
+                timerText.text = "Time: " + seconds + "s";
+            }
+            else
+            {
+                timerText.text = "Time: 120s";
             }
             
             if (GameManager.Gary.levelCompleted && !isLevelCompleteShowing)
@@ -162,24 +131,15 @@ public class UIManager : MonoBehaviour
         
         isLevelCompleteShowing = true;
         
-        if (levelCompletePanel != null)
-        {
-            levelCompletePanel.SetActive(true);
-        }
-        
-        if (successMessageText != null)
-        {
-            successMessageText.text = successMessage;
-            successMessageText.gameObject.SetActive(true);
-        }
+        levelCompletePanel.SetActive(true);
+        successMessageText.text = successMessage;
+        successMessageText.gameObject.SetActive(true);
         
         if (SoundManager.Steve != null)
         {
             AudioSource bgMusic = SoundManager.Steve.GetComponent<AudioSource>();
             if (bgMusic != null && bgMusic.isPlaying)
-            {
                 bgMusic.Stop();
-            }
             
             SoundManager.Steve.PlayLevelCompleteSound();
         }
@@ -192,61 +152,40 @@ public class UIManager : MonoBehaviour
         isReadyShowing = true;
         isCountdownActive = true;
         
-        if (readyPanel != null)
-        {
-            readyPanel.SetActive(true);
-        }
-        
-        if (readyMessageText != null)
-        {
-            readyMessageText.text = readyMessage;
-            readyMessageText.gameObject.SetActive(true);
-        }
+        readyPanel.SetActive(true);
+        readyMessageText.text = readyMessage;
+        readyMessageText.gameObject.SetActive(true);
         
         Invoke(nameof(ShowCountdown3), readyDisplayDuration);
     }
     
     void ShowCountdown3()
     {
-        if (readyMessageText != null)
-        {
-            readyMessageText.text = "3";
-        }
+        readyMessageText.text = "3";
         Invoke(nameof(ShowCountdown2), countdownInterval);
     }
     
     void ShowCountdown2()
     {
-        if (readyMessageText != null)
-        {
-            readyMessageText.text = "2";
-        }
+        readyMessageText.text = "2";
         Invoke(nameof(ShowCountdown1), countdownInterval);
     }
     
     void ShowCountdown1()
     {
-        if (readyMessageText != null)
-        {
-            readyMessageText.text = "1";
-        }
+        readyMessageText.text = "1";
         Invoke(nameof(HideReady), countdownInterval);
     }
     
     void HideReady()
     {
-        if (readyPanel != null)
-        {
-            readyPanel.SetActive(false);
-        }
-        
-        if (readyMessageText != null)
-        {
-            readyMessageText.gameObject.SetActive(false);
-        }
+        readyPanel.SetActive(false);
+        readyMessageText.gameObject.SetActive(false);
         
         isReadyShowing = false;
         isCountdownActive = false;
+        
+        GameManager.Gary.StartTimer();
     }
     
     public void ShowOops()
@@ -255,31 +194,17 @@ public class UIManager : MonoBehaviour
         
         isOopsShowing = true;
         
-        if (oopsPanel != null)
-        {
-            oopsPanel.SetActive(true);
-        }
-        
-        if (oopsMessageText != null)
-        {
-            oopsMessageText.text = oopsMessage;
-            oopsMessageText.gameObject.SetActive(true);
-        }
+        oopsPanel.SetActive(true);
+        oopsMessageText.text = oopsMessage;
+        oopsMessageText.gameObject.SetActive(true);
         
         Invoke(nameof(HideOops), oopsDisplayDuration);
     }
     
     void HideOops()
     {
-        if (oopsPanel != null)
-        {
-            oopsPanel.SetActive(false);
-        }
-        
-        if (oopsMessageText != null)
-        {
-            oopsMessageText.gameObject.SetActive(false);
-        }
+        oopsPanel.SetActive(false);
+        oopsMessageText.gameObject.SetActive(false);
         
         isOopsShowing = false;
     }
@@ -290,81 +215,31 @@ public class UIManager : MonoBehaviour
         
         isGameOverShowing = true;
         
-        if (gameOverPanel != null)
-        {
-            gameOverPanel.SetActive(true);
-        }
-        
-        if (gameOverMessageText != null)
-        {
-            gameOverMessageText.text = gameOverMessage;
-            gameOverMessageText.gameObject.SetActive(true);
-        }
+        gameOverPanel.SetActive(true);
+        gameOverMessageText.text = gameOverMessage;
+        gameOverMessageText.gameObject.SetActive(true);
         
         if (SoundManager.Steve != null)
         {
             AudioSource bgMusic = SoundManager.Steve.GetComponent<AudioSource>();
             if (bgMusic != null && bgMusic.isPlaying)
-            {
                 bgMusic.Stop();
-            }
         }
     }
     
     public void RestartLevel()
     {
-        if (GameManager.Gary != null)
-        {
-            GameManager.Gary.RestartLevel();
-        }
-        else
-        {
-            UnityEngine.SceneManagement.SceneManager.LoadScene(
-                UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex
-            );
-        }
+        GameManager.Gary.RestartLevel();
     }
     
     public void NextLevel()
     {
-        if (GameManager.Gary != null)
-        {
-            GameManager.Gary.LoadNextLevel();
-        }
-        else
-        {
-            int nextSceneIndex = UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex + 1;
-            if (nextSceneIndex < UnityEngine.SceneManagement.SceneManager.sceneCountInBuildSettings)
-            {
-                UnityEngine.SceneManagement.SceneManager.LoadScene(nextSceneIndex);
-            }
-        }
+        GameManager.Gary.LoadNextLevel();
     }
     
     public void RestartGame()
     {
-        isGameOverShowing = false;
-        
-        if (gameOverPanel != null)
-        {
-            gameOverPanel.SetActive(false);
-        }
-        
-        if (gameOverMessageText != null)
-        {
-            gameOverMessageText.gameObject.SetActive(false);
-        }
-        
-        if (GameManager.Gary != null)
-        {
-            GameManager.Gary.RestartLevel();
-        }
-        else
-        {
-            UnityEngine.SceneManagement.SceneManager.LoadScene(
-                UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex
-            );
-        }
+        GameManager.Gary.RestartLevel();
     }
 }
 

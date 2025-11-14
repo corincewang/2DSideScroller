@@ -28,9 +28,9 @@ public class CharacterController2D : MonoBehaviour
     public Animator animator;
     public bool facingRight = true;
     public bool isAlive = true;
+    
     void Start()
     {
-
         rb = GetComponent<Rigidbody2D>();
         if (animator == null)
         {
@@ -43,7 +43,9 @@ public class CharacterController2D : MonoBehaviour
 
         moveAction = InputSystem.actions.FindAction("Move");
         jumpAction = InputSystem.actions.FindAction("Jump");
-
+        
+        moveAction.Enable();
+        jumpAction.Enable();
     }
 
     void Update()
@@ -52,9 +54,7 @@ public class CharacterController2D : MonoBehaviour
         bool countdownActive = false;
         UIManager uiManager = FindObjectOfType<UIManager>();
         if (uiManager != null)
-        {
             countdownActive = uiManager.isCountdownActive;
-        }
         
         if (transform.position.y < deathY && isAlive)
         {
@@ -64,7 +64,7 @@ public class CharacterController2D : MonoBehaviour
             GameManager.Gary.PlayerDeath(gameObject);
         }
         
-        if (jumpAction.WasPressedThisFrame() && isGrounded && isAlive && !levelCompleted && !countdownActive)
+        if (jumpAction.WasPressedThisFrame() && isGrounded && isAlive && !levelCompleted)
         {
             rb.linearVelocityY = jumpHeight;
             SoundManager.Steve.PlayJumpSound();
@@ -94,8 +94,6 @@ public class CharacterController2D : MonoBehaviour
 
         animator.SetFloat("Speed", Mathf.Abs(moveDirection));
 
-
-
         if (moveDirection < -0.01f && facingRight)
         {
             facingRight = false;
@@ -119,9 +117,7 @@ public class CharacterController2D : MonoBehaviour
         bool countdownActive = false;
         UIManager uiManager = FindObjectOfType<UIManager>();
         if (uiManager != null)
-        {
             countdownActive = uiManager.isCountdownActive;
-        }
         
         isGrounded = false;
 
@@ -130,13 +126,36 @@ public class CharacterController2D : MonoBehaviour
 
         foreach (Collider2D col in colliders)
         {
-            if (col != null)
+            Bounds bounds = col.bounds;
+            PlatformEffector2D platformEffector = col.GetComponent<PlatformEffector2D>();
+            
+            if (platformEffector != null)
             {
-                Bounds bounds = col.bounds;
-                if (bounds.max.y <= groundCheckPos.y + 0.1f)
+                if (transform.position.y >= bounds.max.y)
+                {
+                    Vector2 closestPoint = col.ClosestPoint(groundCheckPos);
+                    if (closestPoint.y <= groundCheckPos.y + 0.1f)
+                    {
+                        isGrounded = true;
+                        break;
+                    }
+                }
+                else
                 {
                     isGrounded = true;
                     break;
+                }
+            }
+            else
+            {
+                if (bounds.max.y <= transform.position.y)
+                {
+                    Vector2 closestPoint = col.ClosestPoint(groundCheckPos);
+                    if (closestPoint.y <= groundCheckPos.y + 0.1f)
+                    {
+                        isGrounded = true;
+                        break;
+                    }
                 }
             }
         }
@@ -175,19 +194,12 @@ public class CharacterController2D : MonoBehaviour
         {
             ContactPoint2D contact = collision.contacts[0];
 
-
             if (contact.normal.y > 0.7f)
             {
                 EnemyScript enemy = collision.gameObject.GetComponent<EnemyScript>();
 
-                if (enemy && isAlive)
-                {
+                if (enemy != null && isAlive)
                     enemy.PlayerKilledEnemy();
-                }
-                else
-                {
-                    return;
-                }
             }
             else
             {
@@ -200,5 +212,3 @@ public class CharacterController2D : MonoBehaviour
         }
     }
 }
-
-
