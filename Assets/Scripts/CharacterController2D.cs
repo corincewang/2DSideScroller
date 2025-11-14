@@ -125,12 +125,20 @@ public class CharacterController2D : MonoBehaviour
         
         isGrounded = false;
 
-        Vector3 groundCheck = groundCheckOffset;
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position + groundCheck, groundCheckRadius, groundLayerMask);
+        Vector3 groundCheckPos = transform.position + (Vector3)groundCheckOffset;
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(groundCheckPos, groundCheckRadius, groundLayerMask);
 
-        if (colliders.Length > 0)
+        foreach (Collider2D col in colliders)
         {
-            isGrounded = true;
+            if (col != null)
+            {
+                Bounds bounds = col.bounds;
+                if (bounds.max.y <= groundCheckPos.y + 0.1f)
+                {
+                    isGrounded = true;
+                    break;
+                }
+            }
         }
 
         if (levelCompleted || countdownActive)
