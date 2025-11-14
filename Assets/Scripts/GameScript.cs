@@ -4,12 +4,7 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Gary;
-    public bool levelCompleted = false;
     public int score = 0;
-    
-    [Header("Level Management")]
-    public int currentLevel = 1;
-    public int totalLevels = 1;
     
     [Header("Player Respawn")]
     public GameObject playerPrefab;
@@ -20,13 +15,9 @@ public class GameManager : MonoBehaviour
     public int currentLives = 3;
     public bool isGameOver = false;
     
-    [Header("Timer System")]
-    public float levelTimeLimit = 120f;
-    public float currentTime = 0f;
-    public bool isTimerRunning = false;
-    
     private GameObject currentPlayer;
     private Vector3? checkpointPosition = null;
+    private UIManager uiManager;
     
     void Awake()
     {
@@ -43,26 +34,11 @@ public class GameManager : MonoBehaviour
     
     void Start()
     {
-        currentLevel = SceneManager.GetActiveScene().buildIndex;
         currentPlayer = GameObject.FindGameObjectWithTag("Player");
+        uiManager = FindObjectOfType<UIManager>();
         ResetLives();
         ResetCheckpoint();
         ResetAllCheckpoints();
-        currentTime = 0f;
-        isTimerRunning = false;
-    }
-    
-    void Update()
-    {
-        if (isTimerRunning && !levelCompleted && !isGameOver)
-        {
-            currentTime += Time.deltaTime;
-            
-            if (currentTime >= levelTimeLimit)
-            {
-                TimeUp();
-            }
-        }
     }
     
     void OnEnable()
@@ -78,11 +54,10 @@ public class GameManager : MonoBehaviour
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         currentPlayer = GameObject.FindGameObjectWithTag("Player");
+        uiManager = FindObjectOfType<UIManager>();
         ResetLives();
         ResetCheckpoint();
         ResetAllCheckpoints();
-        currentTime = 0f;
-        isTimerRunning = false;
     }
     
     void ResetAllCheckpoints()
@@ -103,7 +78,9 @@ public class GameManager : MonoBehaviour
         
         currentLives--;
         
-        UIManager uiManager = FindObjectOfType<UIManager>();
+        if (uiManager == null)
+            uiManager = FindObjectOfType<UIManager>();
+        
         if (currentLives > 0)
         {
             uiManager.ShowOops();
@@ -118,7 +95,9 @@ public class GameManager : MonoBehaviour
     
     void ShowGameOver()
     {
-        UIManager uiManager = FindObjectOfType<UIManager>();
+        if (uiManager == null)
+            uiManager = FindObjectOfType<UIManager>();
+        
         uiManager.ShowGameOver();
     }
     
@@ -167,37 +146,13 @@ public class GameManager : MonoBehaviour
         }
     }
     
-    public void CompleteLevel()
-    {
-        levelCompleted = true;
-        StopTimer();
-    }
-    
     public void AddScore(int points)
     {
         score += points;
     }
     
-    public void ResetLevelState()
+    public void TimeUp()
     {
-        levelCompleted = false;
-        isGameOver = false;
-    }
-    
-    public void StartTimer()
-    {
-        currentTime = 0f;
-        isTimerRunning = true;
-    }
-    
-    void StopTimer()
-    {
-        isTimerRunning = false;
-    }
-    
-    void TimeUp()
-    {
-        StopTimer();
         isGameOver = true;
         
         if (currentPlayer != null)
@@ -218,33 +173,19 @@ public class GameManager : MonoBehaviour
     {
         currentLives = maxLives;
         isGameOver = false;
-    }
-    
-    public void LoadNextLevel()
-    {
-        ResetLevelState();
-        int nextSceneIndex = SceneManager.GetActiveScene().buildIndex + 1;
-        if (nextSceneIndex < SceneManager.sceneCountInBuildSettings)
-        {
-            SceneManager.LoadScene(nextSceneIndex);
-            currentLevel = nextSceneIndex;
-        }
-        else
-        {
-            SceneManager.LoadScene(0);
-            currentLevel = 0;
-        }
+        if (LevelScript.Larry != null)
+            LevelScript.Larry.ResetLevelState();
     }
     
     public void RestartLevel()
     {
-        ResetLevelState();
+        isGameOver = false;
         ResetLives();
         ResetCheckpoint();
         ResetAllCheckpoints();
         score = 0;
-        StartTimer();
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        if (LevelScript.Larry != null)
+            LevelScript.Larry.RestartLevel();
     }
     
     public void SetCheckpointPosition(Vector3 position)

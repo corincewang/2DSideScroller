@@ -106,9 +106,9 @@ public class UIManager : MonoBehaviour
             scoreText.text = "Score: " + GameManager.Gary.score;
             livesText.text = "Lives: " + GameManager.Gary.currentLives;
             
-            if (GameManager.Gary.isTimerRunning)
+            if (LevelScript.Larry != null && LevelScript.Larry.isTimerRunning)
             {
-                float remainingTime = GameManager.Gary.levelTimeLimit - GameManager.Gary.currentTime;
+                float remainingTime = LevelScript.Larry.levelTimeLimit - LevelScript.Larry.currentTime;
                 if (remainingTime < 0) remainingTime = 0;
                 int seconds = Mathf.FloorToInt(remainingTime);
                 timerText.text = "Time: " + seconds + "s";
@@ -118,7 +118,7 @@ public class UIManager : MonoBehaviour
                 timerText.text = "Time: 120s";
             }
             
-            if (GameManager.Gary.levelCompleted && !isLevelCompleteShowing)
+            if (LevelScript.Larry != null && LevelScript.Larry.levelCompleted && !isLevelCompleteShowing)
             {
                 ShowLevelComplete();
             }
@@ -185,7 +185,8 @@ public class UIManager : MonoBehaviour
         isReadyShowing = false;
         isCountdownActive = false;
         
-        GameManager.Gary.StartTimer();
+        if (LevelScript.Larry != null)
+            LevelScript.Larry.StartTimer();
     }
     
     public void ShowOops()
@@ -234,7 +235,8 @@ public class UIManager : MonoBehaviour
     
     public void NextLevel()
     {
-        GameManager.Gary.LoadNextLevel();
+        if (LevelScript.Larry != null)
+            LevelScript.Larry.LoadNextLevel();
     }
     
     public void RestartGame()

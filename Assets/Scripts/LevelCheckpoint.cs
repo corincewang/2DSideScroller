@@ -149,7 +149,8 @@ public class LevelCheckpoint : MonoBehaviour
             if (playerController != null && playerController.isAlive)
             {
                 hasBeenReached = true;
-                GameManager.Gary.CompleteLevel();
+                if (LevelScript.Larry != null)
+                    LevelScript.Larry.CompleteLevel();
             }
         }
     }

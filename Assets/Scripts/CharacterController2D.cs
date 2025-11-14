@@ -50,7 +50,7 @@ public class CharacterController2D : MonoBehaviour
 
     void Update()
     {
-        bool levelCompleted = GameManager.Gary != null && GameManager.Gary.levelCompleted;
+        bool levelCompleted = LevelScript.Larry != null && LevelScript.Larry.levelCompleted;
         bool countdownActive = false;
         UIManager uiManager = FindObjectOfType<UIManager>();
         if (uiManager != null)
@@ -113,7 +113,7 @@ public class CharacterController2D : MonoBehaviour
 
     void FixedUpdate()
     {
-        bool levelCompleted = GameManager.Gary != null && GameManager.Gary.levelCompleted;
+        bool levelCompleted = LevelScript.Larry != null && LevelScript.Larry.levelCompleted;
         bool countdownActive = false;
         UIManager uiManager = FindObjectOfType<UIManager>();
         if (uiManager != null)
@@ -127,35 +127,22 @@ public class CharacterController2D : MonoBehaviour
         foreach (Collider2D col in colliders)
         {
             Bounds bounds = col.bounds;
-            PlatformEffector2D platformEffector = col.GetComponent<PlatformEffector2D>();
+            bool isPlatformEffector = col.GetComponent<PlatformEffector2D>() != null;
+            bool playerAbovePlatform = transform.position.y >= bounds.max.y;
             
-            if (platformEffector != null)
+            if (isPlatformEffector && !playerAbovePlatform)
             {
-                if (transform.position.y >= bounds.max.y)
-                {
-                    Vector2 closestPoint = col.ClosestPoint(groundCheckPos);
-                    if (closestPoint.y <= groundCheckPos.y + 0.1f)
-                    {
-                        isGrounded = true;
-                        break;
-                    }
-                }
-                else
+                isGrounded = true;
+                break;
+            }
+            
+            if (playerAbovePlatform)
+            {
+                Vector2 closestPoint = col.ClosestPoint(groundCheckPos);
+                if (closestPoint.y <= groundCheckPos.y + 0.1f)
                 {
                     isGrounded = true;
                     break;
-                }
-            }
-            else
-            {
-                if (bounds.max.y <= transform.position.y)
-                {
-                    Vector2 closestPoint = col.ClosestPoint(groundCheckPos);
-                    if (closestPoint.y <= groundCheckPos.y + 0.1f)
-                    {
-                        isGrounded = true;
-                        break;
-                    }
                 }
             }
         }
