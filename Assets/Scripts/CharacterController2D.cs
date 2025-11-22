@@ -67,7 +67,8 @@ public class CharacterController2D : MonoBehaviour
         if (jumpAction.WasPressedThisFrame() && isGrounded && isAlive && !levelCompleted)
         {
             rb.linearVelocityY = jumpHeight;
-            SoundManager.Steve.PlayJumpSound();
+            if (SoundManager.Steve != null)
+                SoundManager.Steve.PlayJumpSound();
             animator.SetBool("Grounded", false);
             animator.SetTrigger("JumpTrigger");
             jumpInputLockTime = jumpLockDuration;
@@ -193,7 +194,8 @@ public class CharacterController2D : MonoBehaviour
                 isAlive = false;
                 animator.SetTrigger("Death");
                 GetComponent<Collider2D>().enabled = false;
-                SoundManager.Steve.PlayDeathSound();
+                if (SoundManager.Steve != null)
+                    SoundManager.Steve.PlayDeathSound();
                 GameManager.Gary.PlayerDeath(gameObject);
             }
         }

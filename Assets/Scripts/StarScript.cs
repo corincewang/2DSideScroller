@@ -9,7 +9,8 @@ public class StarScript : MonoBehaviour
         if (collision.gameObject.CompareTag("Player"))
         {
             GameManager.Gary.AddScore(starValue);
-            SoundManager.Steve.PlayStarSound();
+            if (SoundManager.Steve != null)
+                SoundManager.Steve.PlayStarSound();
             Destroy(gameObject);
         }
     }

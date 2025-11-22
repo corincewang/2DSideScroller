@@ -68,7 +68,8 @@ public class EnemyScript : MonoBehaviour
             GetComponent<Collider2D>().enabled = false;
             
             animator.SetTrigger("EnemyDeath");
-            SoundManager.Steve.PlayEnemyHitSound();
+            if (SoundManager.Steve != null)
+                SoundManager.Steve.PlayEnemyHitSound();
             
             Destroy(gameObject, 0.6f);
         }

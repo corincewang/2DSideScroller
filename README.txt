@@ -1,8 +1,11 @@
 Attribution List:
 
 Sprite Tile Assets: 
-Sunny Land Forest by Anismuz (Unity Asset Store)
+1. Sunny Land Forest by Anismuz (Unity Asset Store)
 https://assetstore.unity.com/packages/2d/characters/sunny-land-forest-108124
+
+2. Warped City Assets Pack by Anismuz (Unity Asset Store)
+https://assetstore.unity.com/packages/2d/environments/warped-city-assets-pack-138128
 
 Effect Sound: 
 RPG Essentials Sound Effects by leohpaz (Unity Asset Store)

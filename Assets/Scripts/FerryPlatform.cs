@@ -8,9 +8,19 @@ public class FerryPlatform : MonoBehaviour
     
     void Start()
     {
-        animator = GetComponent<Animator>();
         initialPosition = transform.position;
         initialRotation = transform.rotation;
+        
+        animator = GetComponent<Animator>();
+        
+        if (animator != null)
+        {
+            animator.Rebind();
+            animator.Update(0f);
+        }
+        
+        transform.position = initialPosition;
+        transform.rotation = initialRotation;
         
         if (GameManager.Gary != null)
         {
