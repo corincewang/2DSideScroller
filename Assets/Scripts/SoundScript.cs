@@ -1,10 +1,15 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SoundManager : MonoBehaviour
 {
     public static SoundManager Steve;
 
-    public AudioClip backgroundMusic;
+    [Header("Background Music Per Level")]
+    public AudioClip level1BackgroundMusic;
+    public AudioClip level2BackgroundMusic;
+    
+    [Header("Sound Effects")]
     public AudioClip playerDeathSound;
     public AudioClip playerJumpSound;
     public AudioClip enemyHitSound;
@@ -28,11 +33,52 @@ public class SoundManager : MonoBehaviour
     void Start()
     {
         thisAudio = GetComponent<AudioSource>();
+        PlayBackgroundMusicForCurrentScene();
+    }
+    
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+    
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+    
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        PlayBackgroundMusicForCurrentScene();
+    }
+    
+    void PlayBackgroundMusicForCurrentScene()
+    {
+        if (thisAudio == null)
+            return;
+            
+        string sceneName = SceneManager.GetActiveScene().name;
+        AudioClip musicToPlay = null;
         
-        if (backgroundMusic != null)
+        // 根据场景名称选择背景音乐
+        if (sceneName == "level1" && level1BackgroundMusic != null)
         {
-            thisAudio.clip = backgroundMusic;
+            musicToPlay = level1BackgroundMusic;
+        }
+        else if (sceneName == "level2" && level2BackgroundMusic != null)
+        {
+            musicToPlay = level2BackgroundMusic;
+        }
+        
+        // 播放或切换音乐
+        if (musicToPlay != null && thisAudio.clip != musicToPlay)
+        {
+            thisAudio.Stop();
+            thisAudio.clip = musicToPlay;
             thisAudio.loop = true;
+            thisAudio.Play();
+        }
+        else if (musicToPlay != null && !thisAudio.isPlaying)
+        {
             thisAudio.Play();
         }
     }
