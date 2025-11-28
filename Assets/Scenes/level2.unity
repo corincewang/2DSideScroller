@@ -17152,7 +17152,7 @@ MonoBehaviour:
   checkpointX: 62
   checkpointY: 3
   useTriggerForCheckpoint: 0
-  levelNumber: 1
+  levelNumber: 2
 --- !u!61 &1139349483
 BoxCollider2D:
   m_ObjectHideFlags: 0

@@ -11,7 +11,11 @@ public class SceneBootstrap : MonoBehaviour
     
     void Awake()
     {
-        if (onlyRunInEditor && !Application.isEditor)
+        // 如果是level1 (buildIndex 0)，总是运行bootstrap
+        // 其他关卡只在编辑器中运行bootstrap（用于测试单个场景）
+        bool isLevel1 = UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex == 0;
+        
+        if (onlyRunInEditor && !Application.isEditor && !isLevel1)
         {
             return;
         }

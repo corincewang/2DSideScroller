@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 6ffcf8cb6bf0245039533bc3dc4f0a9c
+guid: bf70b3cdf2cb44987864b7a3b5547061
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7521714790235760469
-    second: Weeping Willow3_0
+      213: 8522055383090261060
+    second: Alisaie 2_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Weeping Willow3_0
+      name: Alisaie 2_0
       rect:
         serializedVersion: 2
-        x: 3
+        x: 4
         y: 0
-        width: 218
-        height: 192
+        width: 19
+        height: 25
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ba8123200408d9790800000000000000
-      internalID: -7521714790235760469
+      spriteID: 44cec49183c644670800000000000000
+      internalID: 8522055383090261060
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Weeping Willow3_0: -7521714790235760469
+      Alisaie 2_0: 8522055383090261060
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

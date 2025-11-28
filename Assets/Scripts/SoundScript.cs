@@ -8,6 +8,7 @@ public class SoundManager : MonoBehaviour
     [Header("Background Music Per Level")]
     public AudioClip level1BackgroundMusic;
     public AudioClip level2BackgroundMusic;
+    public AudioClip level3BackgroundMusic;
     
     [Header("Sound Effects")]
     public AudioClip playerDeathSound;
@@ -27,6 +28,7 @@ public class SoundManager : MonoBehaviour
         else
         {
             Steve = this;
+            DontDestroyOnLoad(gameObject);
         }
     }
 
@@ -67,6 +69,10 @@ public class SoundManager : MonoBehaviour
         else if (sceneName == "level2" && level2BackgroundMusic != null)
         {
             musicToPlay = level2BackgroundMusic;
+        }
+        else if (sceneName == "level3" && level3BackgroundMusic != null)
+        {
+            musicToPlay = level3BackgroundMusic;
         }
         
         // 播放或切换音乐
