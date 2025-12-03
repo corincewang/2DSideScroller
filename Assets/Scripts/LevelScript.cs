@@ -5,123 +5,69 @@ public class LevelScript : MonoBehaviour
 {
     public static LevelScript Larry;
     
-    public bool levelCompleted = false;
-    public int currentLevel = 1;
-    public int totalLevels = 1;
+    public string nextLevel;
+    public float timeLimit = 120f;
     
-    [Header("Timer System")]
-    public float levelTimeLimit = 120f;
-    public float currentTime = 0f;
-    public bool isTimerRunning = false;
+    public bool levelCompleted;
+    public float currentTime;
+    public bool isTimerRunning;
     
     void Awake()
     {
-        if (Larry && Larry != this)
-        {
-            Destroy(this.gameObject);
-        }
-        else
-        {
-            Larry = this;
-            DontDestroyOnLoad(gameObject);
-        }
+        Larry = this;
     }
     
     void Start()
     {
-        currentLevel = SceneManager.GetActiveScene().buildIndex;
-        currentTime = 0f;
+        currentTime = 0;
         isTimerRunning = false;
     }
     
     void Update()
     {
-        if (isTimerRunning && !levelCompleted && (GameManager.Gary == null || !GameManager.Gary.isGameOver))
+        if (isTimerRunning && !levelCompleted && !GameManager.Gary.isGameOver)
         {
             currentTime += Time.deltaTime;
-            
-            if (currentTime >= levelTimeLimit)
+            if (currentTime >= timeLimit)
             {
-                TimeUp();
+                isTimerRunning = false;
+                GameManager.Gary.TimeUp();
             }
         }
     }
     
-    void OnEnable()
+    public void StartTimer()
     {
-        SceneManager.sceneLoaded += OnSceneLoaded;
-    }
-    
-    void OnDisable()
-    {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
-    
-    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        currentLevel = SceneManager.GetActiveScene().buildIndex;
-        currentTime = 0f;
-        isTimerRunning = false;
+        currentTime = 0;
+        isTimerRunning = true;
     }
     
     public void CompleteLevel()
     {
         levelCompleted = true;
-        StopTimer();
-    }
-    
-    public void ResetLevelState()
-    {
-        levelCompleted = false;
-    }
-    
-    public void StartTimer()
-    {
-        currentTime = 0f;
-        isTimerRunning = true;
-    }
-    
-    void StopTimer()
-    {
         isTimerRunning = false;
-    }
-    
-    void TimeUp()
-    {
-        StopTimer();
-        if (GameManager.Gary != null)
-            GameManager.Gary.TimeUp();
     }
     
     public void LoadNextLevel()
     {
-        ResetLevelState();
-        int nextSceneIndex = SceneManager.GetActiveScene().buildIndex + 1;
-        if (nextSceneIndex < SceneManager.sceneCountInBuildSettings)
-        {
-            SceneManager.LoadScene(nextSceneIndex);
-            currentLevel = nextSceneIndex;
-        }
-        else
-        {
-            SceneManager.LoadScene(0);
-            currentLevel = 0;
-        }
+        SceneManager.LoadScene(nextLevel);
     }
     
     public void RestartLevel()
     {
-        ResetLevelState();
-        StartTimer();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
     
-    void OnTriggerEnter2D(Collider2D collision)
+    void OnTriggerEnter2D(Collider2D col)
     {
-        if (collision.gameObject.CompareTag("Player"))
-        {
+        if (col.CompareTag("Player"))
             CompleteLevel();
-        }
+    }
+    
+    void OnDestroy()
+    {
+        if (Larry == this)
+            Larry = null;
     }
 }
 

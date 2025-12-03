@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 5580903565757932122}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 80.051506, y: -0.44706938, z: -0.022917138}
+  m_LocalPosition: {x: 0, y: -0.44706938, z: -0.022917138}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -44,4 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 245411e9be60a4156b8557bfc9861b4a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelCompleted: 0
+  score: 0
+  maxLives: 3
+  currentLives: 3
+  isGameOver: 0
+  respawnDelay: 1
+  spawnPoint: {x: 0, y: 0, z: 0}

@@ -20,3 +20,6 @@ https://assetstore.unity.com/zh-CN/publishers/67560
 
 Player Character and Some Enemies (my_art):
 art created by myself earlier, all are pixel style fan-art based on RPG Game FINAL FANTASY XIV.
+
+Ladder Mechanism Reference:
+https://www.youtube.com/watch?v=yyg0yV2roPk by bendux

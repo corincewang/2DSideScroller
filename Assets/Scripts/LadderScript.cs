@@ -3,101 +3,49 @@ using UnityEngine.InputSystem;
 
 public class LadderScript : MonoBehaviour
 {
-    [Header("Ladder Settings")]
-    public float climbSpeed = 3f;
-    public bool allowJumpOffLadder = true;
+    public float speed = 6f;
     
-    private bool isPlayerOnLadder = false;
-    private bool isClimbing = false;
-    private GameObject playerOnLadder = null;
-    private Rigidbody2D playerRb = null;
-    private CharacterController2D playerController = null;
-    private float originalGravityScale = 1f;
-    private InputAction moveAction, jumpAction;
+    private float vertical;
+    private bool isLadder;
+    private bool isClimbing;
+    private Rigidbody2D rb;
     
-    void OnTriggerEnter2D(Collider2D collision)
+    void Update()
     {
-        if (collision.gameObject.CompareTag("Player"))
+        vertical = InputSystem.actions.FindAction("Move").ReadValue<Vector2>().y;
+        
+        if (isLadder && Mathf.Abs(vertical) > 0f)
+            isClimbing = true;
+    }
+    
+    void FixedUpdate()
+    {
+        if (isClimbing)
         {
-            isPlayerOnLadder = true;
-            isClimbing = false;
-            playerOnLadder = collision.gameObject;
-            playerRb = collision.gameObject.GetComponent<Rigidbody2D>();
-            playerController = collision.gameObject.GetComponent<CharacterController2D>();
-            
-            if (playerRb != null)
-            {
-                originalGravityScale = playerRb.gravityScale;
-            }
-            
-            if (moveAction == null)
-            {
-                moveAction = InputSystem.actions.FindAction("Move");
-            }
-            if (jumpAction == null)
-            {
-                jumpAction = InputSystem.actions.FindAction("Jump");
-            }
+            rb.gravityScale = 0f;
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, vertical * speed);
+        }
+        else
+        {
+            rb.gravityScale = 4f;
         }
     }
     
-    void OnTriggerStay2D(Collider2D collision)
+    void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.CompareTag("Player") && playerRb != null)
+        if (collision.CompareTag("Player"))
         {
-            float verticalInput = 0f;
-            if (moveAction != null)
-            {
-                verticalInput = moveAction.ReadValue<Vector2>().y;
-            }
-            
-            if (allowJumpOffLadder && jumpAction != null && jumpAction.WasPressedThisFrame() && isClimbing)
-            {
-                ExitClimbingMode();
-                return;
-            }
-            
-            if (Mathf.Abs(verticalInput) > 0.1f)
-            {
-                isClimbing = true;
-                playerRb.gravityScale = 0f;
-                playerRb.linearVelocity = new Vector2(playerRb.linearVelocity.x, verticalInput * climbSpeed);
-            }
-            else if (isClimbing)
-            {
-                playerRb.gravityScale = 0f;
-                playerRb.linearVelocity = new Vector2(playerRb.linearVelocity.x, 0f);
-            }
-            else
-            {
-                if (playerRb.gravityScale != originalGravityScale)
-                {
-                    playerRb.gravityScale = originalGravityScale;
-                }
-            }
+            isLadder = true;
+            rb = collision.GetComponent<Rigidbody2D>();
         }
     }
     
     void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.gameObject.CompareTag("Player"))
+        if (collision.CompareTag("Player"))
         {
-            ExitClimbingMode();
+            isLadder = false;
+            isClimbing = false;
         }
-    }
-    
-    void ExitClimbingMode()
-    {
-        isPlayerOnLadder = false;
-        isClimbing = false;
-        
-        if (playerRb != null)
-        {
-            playerRb.gravityScale = originalGravityScale;
-        }
-        
-        playerOnLadder = null;
-        playerRb = null;
-        playerController = null;
     }
 }

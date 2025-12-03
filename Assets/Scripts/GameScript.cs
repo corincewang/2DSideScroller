@@ -4,27 +4,23 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Gary;
-    public int score = 0;
     
-    [Header("Player Respawn")]
-    public GameObject playerPrefab;
-    public float respawnDelay = 1f;
-    
-    [Header("Lives System")]
+    public int score;
     public int maxLives = 3;
     public int currentLives = 3;
-    public bool isGameOver = false;
+    public bool isGameOver;
+    public float respawnDelay = 1f;
+    public Vector3 spawnPoint;
+    public float checkpointX = 60f;
     
-    private GameObject currentPlayer;
-    private Vector3? checkpointPosition = null;
-    private UIManager uiManager;
+    public System.Action OnPlayerRespawn;
+    
+    private GameObject player;
     
     void Awake()
     {
         if (Gary && Gary != this)
-        {
-            Destroy(this.gameObject);
-        }
+            Destroy(gameObject);
         else
         {
             Gary = this;
@@ -34,56 +30,36 @@ public class GameManager : MonoBehaviour
     
     void Start()
     {
-        currentPlayer = GameObject.FindGameObjectWithTag("Player");
-        uiManager = FindObjectOfType<UIManager>();
-        ResetLives();
-        ResetCheckpoint();
-        ResetAllCheckpoints();
-    }
-    
-    void OnEnable()
-    {
-        SceneManager.sceneLoaded += OnSceneLoaded;
-    }
-    
-    void OnDisable()
-    {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
+        player = GameObject.FindGameObjectWithTag("Player");
+        spawnPoint = player.transform.position;
+        currentLives = maxLives;
     }
     
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        currentPlayer = GameObject.FindGameObjectWithTag("Player");
-        uiManager = FindObjectOfType<UIManager>();
-        ResetLives();
-        ResetCheckpoint();
-        ResetAllCheckpoints();
+        player = GameObject.FindGameObjectWithTag("Player");
+        spawnPoint = player.transform.position;
+        currentLives = maxLives;
+        isGameOver = false;
     }
     
-    void ResetAllCheckpoints()
+    void Update()
     {
-        LevelCheckpoint[] checkpoints = FindObjectsOfType<LevelCheckpoint>();
-        foreach (LevelCheckpoint checkpoint in checkpoints)
-        {
-            checkpoint.ResetCheckpoint();
-        }
+        if (player != null && player.transform.position.x >= checkpointX)
+            spawnPoint = new Vector3(checkpointX, spawnPoint.y, 0);
     }
     
-    public void PlayerDeath(GameObject player)
+    public void PlayerDeath(GameObject p)
     {
         if (isGameOver) return;
         
-        currentPlayer = player;
-        player.SetActive(false);
-        
+        player = p;
+        p.SetActive(false);
         currentLives--;
-        
-        if (uiManager == null)
-            uiManager = FindObjectOfType<UIManager>();
         
         if (currentLives > 0)
         {
-            uiManager.ShowOops();
+            FindObjectOfType<UIManager>().ShowOops();
             Invoke(nameof(RespawnPlayer), respawnDelay);
         }
         else
@@ -93,114 +69,10 @@ public class GameManager : MonoBehaviour
         }
     }
     
-    void ShowGameOver()
-    {
-        if (uiManager == null)
-            uiManager = FindObjectOfType<UIManager>();
-        
-        uiManager.ShowGameOver();
-    }
-    
-    public System.Action OnPlayerRespawn;
-    
     void RespawnPlayer()
     {
-        GameObject playerToRespawn = null;
-        
-        if (currentPlayer != null && !currentPlayer.activeSelf)
-        {
-            playerToRespawn = currentPlayer;
-            playerToRespawn.SetActive(true);
-        }
-        else if (currentPlayer == null)
-        {
-            playerToRespawn = GameObject.FindGameObjectWithTag("Player");
-            
-            if (playerToRespawn == null && playerPrefab != null)
-            {
-                playerToRespawn = Instantiate(playerPrefab);
-            }
-        }
-        else
-        {
-            playerToRespawn = currentPlayer;
-        }
-        
-        if (playerToRespawn != null)
-        {
-            if (checkpointPosition.HasValue)
-            {
-                RespawnPlayerAtPosition(playerToRespawn, checkpointPosition.Value);
-            }
-            else
-            {
-                LevelCheckpoint.currentStartPoint.RespawnPlayer(playerToRespawn);
-            }
-            currentPlayer = playerToRespawn;
-            
-            OnPlayerRespawn?.Invoke();
-        }
-        else
-        {
-            RestartLevel();
-        }
-    }
-    
-    public void AddScore(int points)
-    {
-        score += points;
-    }
-    
-    public void TimeUp()
-    {
-        isGameOver = true;
-        
-        if (currentPlayer != null)
-        {
-            CharacterController2D controller = currentPlayer.GetComponent<CharacterController2D>();
-            if (controller != null && controller.isAlive)
-            {
-                controller.isAlive = false;
-                controller.GetComponent<Collider2D>().enabled = false;
-                controller.animator.SetTrigger("Death");
-            }
-        }
-        
-        Invoke(nameof(ShowGameOver), respawnDelay);
-    }
-    
-    public void ResetLives()
-    {
-        currentLives = maxLives;
-        isGameOver = false;
-        if (LevelScript.Larry != null)
-            LevelScript.Larry.ResetLevelState();
-    }
-    
-    public void RestartLevel()
-    {
-        isGameOver = false;
-        ResetLives();
-        ResetCheckpoint();
-        ResetAllCheckpoints();
-        score = 0;
-        if (LevelScript.Larry != null)
-            LevelScript.Larry.RestartLevel();
-    }
-    
-    public void SetCheckpointPosition(Vector3 position)
-    {
-        checkpointPosition = position;
-    }
-    
-    void ResetCheckpoint()
-    {
-        checkpointPosition = null;
-    }
-    
-    void RespawnPlayerAtPosition(GameObject player, Vector3 position)
-    {
-        player.transform.position = position;
+        player.SetActive(true);
+        player.transform.position = spawnPoint;
         
         CharacterController2D controller = player.GetComponent<CharacterController2D>();
         controller.isAlive = true;
@@ -208,5 +80,36 @@ public class GameManager : MonoBehaviour
         
         Rigidbody2D rb = player.GetComponent<Rigidbody2D>();
         rb.linearVelocity = Vector2.zero;
+        
+        OnPlayerRespawn?.Invoke();
+    }
+    
+    void ShowGameOver()
+    {
+        FindObjectOfType<UIManager>().ShowGameOver();
+    }
+    
+    public void TimeUp()
+    {
+        isGameOver = true;
+        CharacterController2D controller = player.GetComponent<CharacterController2D>();
+        controller.isAlive = false;
+        controller.GetComponent<Collider2D>().enabled = false;
+        controller.animator.SetTrigger("Death");
+        Invoke(nameof(ShowGameOver), respawnDelay);
+    }
+    
+    public void AddScore(int points)
+    {
+        score += points;
+    }
+    
+    public void RestartLevel()
+    {
+        isGameOver = false;
+        currentLives = maxLives;
+        score = 0;
+        if (LevelScript.Larry != null)
+            LevelScript.Larry.RestartLevel();
     }
 }

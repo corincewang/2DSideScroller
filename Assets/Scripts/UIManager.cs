@@ -64,15 +64,6 @@ public class UIManager : MonoBehaviour
         Invoke(nameof(ShowReady), 0.1f);
     }
     
-    void OnEnable()
-    {
-        UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
-    }
-    
-    void OnDisable()
-    {
-        UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
     
     void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode)
     {
@@ -108,7 +99,7 @@ public class UIManager : MonoBehaviour
             
             if (LevelScript.Larry != null && LevelScript.Larry.isTimerRunning)
             {
-                float remainingTime = LevelScript.Larry.levelTimeLimit - LevelScript.Larry.currentTime;
+                float remainingTime = LevelScript.Larry.timeLimit - LevelScript.Larry.currentTime;
                 if (remainingTime < 0) remainingTime = 0;
                 int seconds = Mathf.FloorToInt(remainingTime);
                 timerText.text = "Time: " + seconds + "s";
