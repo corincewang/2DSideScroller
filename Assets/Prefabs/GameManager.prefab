@@ -50,7 +50,7 @@ MonoBehaviour:
   isCountdownActive: 0
   respawnDelay: 1
   spawnPoint: {x: 0, y: 0, z: 0}
-  checkpointX: 58
+  checkpointX: 73
   timeLimit: 120
   messageOverlay: {fileID: 1353110566183378363}
   scoreDisplay: {fileID: 3311401013729179674}
@@ -70,11 +70,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2860847107356988311, guid: 3591f8f6fe26e41268b327b654db7db0, type: 3}
       propertyPath: m_text
-      value: 'Time: 120s'
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5589766148327347892, guid: 3591f8f6fe26e41268b327b654db7db0, type: 3}
       propertyPath: m_text
-      value: Level 1
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 8237632732097213192, guid: 3591f8f6fe26e41268b327b654db7db0, type: 3}
       propertyPath: m_Pivot.x

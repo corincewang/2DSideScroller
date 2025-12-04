@@ -42,9 +42,6 @@ public class GameManager : MonoBehaviour
     
     void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player");
-        spawnPoint = player.transform.position;
-        LevelStarted();
     }
     
     public void LevelStarted()
@@ -56,6 +53,9 @@ public class GameManager : MonoBehaviour
         currentTime = 0;
         isTimerRunning = false;
         
+        int sceneIndex = SceneManager.GetActiveScene().buildIndex;
+        timeLimit = sceneIndex == 3 ? 45f : 120f;
+        
         if (SoundManager.Steve)
             SoundManager.Steve.PlayBackgroundMusicForCurrentScene();
         
@@ -65,12 +65,20 @@ public class GameManager : MonoBehaviour
     public IEnumerator GetReady()
     {
         isCountdownActive = true;
-        yield return new WaitForSeconds(0.1f);
         
         if (messageOverlay)
         {
-            string[] countdownMessages = { "3", "2", "1", "GO!" };
+            int sceneIndex = SceneManager.GetActiveScene().buildIndex;
+            if (sceneIndex == 3)
+            {
+                messageOverlay.text = "Survive 45s!";
+                messageOverlay.enabled = true;
+                yield return new WaitForSeconds(1f);
+                messageOverlay.enabled = false;
+                yield return new WaitForSeconds(0.5f);
+            }
             
+            string[] countdownMessages = { "3", "2", "1", "GO!" };
             for (int i = 0; i < countdownMessages.Length; i++)
             {
                 messageOverlay.text = countdownMessages[i];
@@ -79,8 +87,6 @@ public class GameManager : MonoBehaviour
                 messageOverlay.enabled = false;
                 yield return new WaitForSeconds(0.5f);
             }
-            
-            messageOverlay.enabled = false;
         }
         
         isCountdownActive = false;
@@ -119,7 +125,6 @@ public class GameManager : MonoBehaviour
                 isTimerRunning = false;
                 TimeUp();
             }
-            
             if (timerDisplay)
             {
                 float time = Mathf.Max(0, timeLimit - currentTime);
@@ -177,6 +182,11 @@ public class GameManager : MonoBehaviour
     {
         isGameOver = true;
         
+        if (SoundManager.Steve)
+        {
+            SoundManager.Steve.GetComponent<AudioSource>().Stop();
+        }
+        
         if (messageOverlay)
         {
             messageOverlay.enabled = true;
@@ -192,11 +202,40 @@ public class GameManager : MonoBehaviour
     public void TimeUp()
     {
         isGameOver = true;
-        CharacterController2D controller = player.GetComponent<CharacterController2D>();
-        controller.isAlive = false;
-        controller.GetComponent<Collider2D>().enabled = false;
-        controller.animator.SetTrigger("Death");
-        StartCoroutine(GameOverLoseState());
+        int sceneIndex = SceneManager.GetActiveScene().buildIndex;
+        
+        if (sceneIndex == 3)
+        {
+            StartCoroutine(BossWinState());
+        }
+        else
+        {
+            CharacterController2D controller = player.GetComponent<CharacterController2D>();
+            controller.isAlive = false;
+            controller.GetComponent<Collider2D>().enabled = false;
+            controller.animator.SetTrigger("Death");
+            StartCoroutine(GameOverLoseState());
+        }
+    }
+    
+    IEnumerator BossWinState()
+    {
+        if (messageOverlay)
+        {
+            messageOverlay.enabled = true;
+            messageOverlay.text = "You Win! \nScore: " + score;
+        }
+        
+        if (SoundManager.Steve)
+        {
+            SoundManager.Steve.GetComponent<AudioSource>().Stop();
+            SoundManager.Steve.PlayLevelCompleteSound();
+        }
+        
+        yield return new WaitForSeconds(4f);
+        
+        if (messageOverlay) messageOverlay.enabled = false;
+        SceneManager.LoadScene("MenuScene");
     }
     
     public void AddScore(int points)

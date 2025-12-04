@@ -31,12 +31,12 @@ public class SoundManager : MonoBehaviour
         {
             Steve = this;
             DontDestroyOnLoad(gameObject);
+            thisAudio = GetComponent<AudioSource>();
         }
     }
 
     void Start()
     {
-        thisAudio = GetComponent<AudioSource>();
         PlayBackgroundMusicForCurrentScene();
     }
     
