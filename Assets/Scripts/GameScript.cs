@@ -42,6 +42,30 @@ public class GameManager : MonoBehaviour
     
     void Start()
     {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+        CheckAndResetForMenu();
+    }
+    
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        CheckAndResetForMenu();
+    }
+    
+    void CheckAndResetForMenu()
+    {
+        bool isMenu = SceneManager.GetActiveScene().name == "MenuScene";
+        
+        if (isMenu)
+        {
+            ResetGameState();
+            if (SoundManager.Steve)
+                SoundManager.Steve.PlayBackgroundMusicForCurrentScene();
+        }
+        
+        if (scoreDisplay) scoreDisplay.enabled = !isMenu;
+        if (livesDisplay) livesDisplay.enabled = !isMenu;
+        if (timerDisplay) timerDisplay.enabled = !isMenu;
+        if (messageOverlay) messageOverlay.enabled = false;
     }
     
     public void LevelStarted()
@@ -54,7 +78,7 @@ public class GameManager : MonoBehaviour
         isTimerRunning = false;
         
         int sceneIndex = SceneManager.GetActiveScene().buildIndex;
-        timeLimit = sceneIndex == 3 ? 45f : 120f;
+        timeLimit = sceneIndex == 3 ? 30f : 120f;
         
         if (SoundManager.Steve)
             SoundManager.Steve.PlayBackgroundMusicForCurrentScene();
@@ -71,9 +95,9 @@ public class GameManager : MonoBehaviour
             int sceneIndex = SceneManager.GetActiveScene().buildIndex;
             if (sceneIndex == 3)
             {
-                messageOverlay.text = "Survive 45s!";
+                messageOverlay.text = "Survive 30s!";
                 messageOverlay.enabled = true;
-                yield return new WaitForSeconds(1f);
+                yield return new WaitForSeconds(2f);
                 messageOverlay.enabled = false;
                 yield return new WaitForSeconds(0.5f);
             }
@@ -103,16 +127,14 @@ public class GameManager : MonoBehaviour
         UpdateTimer();
     }
     
-    private void UpdateScoreDisplay()
+    void UpdateScoreDisplay()
     {
-        if (scoreDisplay)
-            scoreDisplay.text = "Score: " + score;
+        if (scoreDisplay) scoreDisplay.text = "Score: " + score;
     }
     
-    private void UpdateLivesDisplay()
+    void UpdateLivesDisplay()
     {
-        if (livesDisplay)
-            livesDisplay.text = "Lives: " + livesRemaining;
+        if (livesDisplay) livesDisplay.text = "Lives: " + livesRemaining;
     }
     
     private void UpdateTimer()
@@ -181,16 +203,17 @@ public class GameManager : MonoBehaviour
     IEnumerator GameOverLoseState()
     {
         isGameOver = true;
-        
-        if (SoundManager.Steve)
-        {
-            SoundManager.Steve.GetComponent<AudioSource>().Stop();
-        }
+        isTimerRunning = false;
         
         if (messageOverlay)
         {
             messageOverlay.enabled = true;
             messageOverlay.text = "Game Over! \nScore: " + score;
+        }
+        
+        if (SoundManager.Steve)
+        {
+            SoundManager.Steve.GetComponent<AudioSource>().Stop();
         }
         
         yield return new WaitForSeconds(3f);
@@ -220,6 +243,9 @@ public class GameManager : MonoBehaviour
     
     IEnumerator BossWinState()
     {
+        isGameOver = true;
+        isTimerRunning = false;
+        
         if (messageOverlay)
         {
             messageOverlay.enabled = true;
@@ -241,6 +267,22 @@ public class GameManager : MonoBehaviour
     public void AddScore(int points)
     {
         score += points;
-        UpdateScoreDisplay();
+    }
+    
+    public void ResetGameState()
+    {
+        score = 0;
+        livesRemaining = 3;
+        isGameOver = false;
+        isCountdownActive = false;
+        currentTime = 0;
+        isTimerRunning = false;
+        timeLimit = 120f;
+        player = null;
+    }
+    
+    void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 }

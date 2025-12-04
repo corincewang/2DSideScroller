@@ -50,7 +50,7 @@ MonoBehaviour:
   isCountdownActive: 0
   respawnDelay: 1
   spawnPoint: {x: 0, y: 0, z: 0}
-  checkpointX: 73
+  checkpointX: 80
   timeLimit: 120
   messageOverlay: {fileID: 1353110566183378363}
   scoreDisplay: {fileID: 3311401013729179674}

@@ -3521,7 +3521,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "1. Play as Alaisie, Try to help her complete advanture around eorzea.\n\n2.
     Press WASD, and space to jump. \n\n3. be careful of enemies, jump ahead on the
-    enemies to kill them.\n\n4. enjoy the adventure!!!"
+    enemies to kill them. You can get extra score if you killed enemies successfully!\n\n4.
+    enjoy the adventure!!!"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9b139dd0d112444898b6130f7c3e6972, type: 2}
   m_sharedMaterial: {fileID: 3945093822417523487, guid: 9b139dd0d112444898b6130f7c3e6972, type: 2}

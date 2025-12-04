@@ -51,12 +51,15 @@ public class SoundManager : MonoBehaviour
         else if (sceneName == "level3") musicToPlay = level3BackgroundMusic;
         else if (sceneName == "level4") musicToPlay = bossBackgroundMusic;
         
-        if (musicToPlay != null && thisAudio.clip != musicToPlay)
+        if (musicToPlay != null)
         {
-            thisAudio.Stop();
-            thisAudio.clip = musicToPlay;
-            thisAudio.loop = true;
-            thisAudio.Play();
+            if (thisAudio.clip != musicToPlay || !thisAudio.isPlaying)
+            {
+                thisAudio.Stop();
+                thisAudio.clip = musicToPlay;
+                thisAudio.loop = true;
+                thisAudio.Play();
+            }
         }
     }
 
