@@ -1,16 +1,15 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro;
+using System.Collections;
 
 public class LevelScript : MonoBehaviour
 {
     public static LevelScript Larry;
     
     public string nextLevel;
-    public float timeLimit = 120f;
     
     public bool levelCompleted;
-    public float currentTime;
-    public bool isTimerRunning;
     
     void Awake()
     {
@@ -19,33 +18,32 @@ public class LevelScript : MonoBehaviour
     
     void Start()
     {
-        currentTime = 0;
-        isTimerRunning = false;
-    }
-    
-    void Update()
-    {
-        if (isTimerRunning && !levelCompleted && !GameManager.Gary.isGameOver)
-        {
-            currentTime += Time.deltaTime;
-            if (currentTime >= timeLimit)
-            {
-                isTimerRunning = false;
-                GameManager.Gary.TimeUp();
-            }
-        }
-    }
-    
-    public void StartTimer()
-    {
-        currentTime = 0;
-        isTimerRunning = true;
+        if (GameManager.Gary != null)
+            GameManager.Gary.LevelStarted();
     }
     
     public void CompleteLevel()
     {
         levelCompleted = true;
-        isTimerRunning = false;
+        StartCoroutine(LevelWin());
+    }
+    
+    IEnumerator LevelWin()
+    {
+        if (GameManager.Gary && GameManager.Gary.messageOverlay)
+        {
+            GameManager.Gary.messageOverlay.enabled = true;
+            GameManager.Gary.messageOverlay.text = "Level Cleared!!";
+        }
+        
+        if (SoundManager.Steve)
+        {
+            SoundManager.Steve.GetComponent<AudioSource>().Stop();
+            SoundManager.Steve.PlayLevelCompleteSound();
+        }
+        
+        yield return new WaitForSeconds(4f);
+        LoadNextLevel();
     }
     
     public void LoadNextLevel()

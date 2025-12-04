@@ -22,19 +22,16 @@ public class SceneBootstrap : MonoBehaviour
         {
             if (gameManagerPrefab != null)
             {
-                Debug.Log("[Bootstrap] Creating GameManager");
                 Instantiate(gameManagerPrefab);
             }
             else
             {
-                Debug.LogWarning("[Bootstrap] GameManager Prefab not set!");
                 CreateEmptyGameManager();
             }
         }
         
         if (LevelScript.Larry == null)
         {
-            Debug.Log("[Bootstrap] Creating LevelScript");
             CreateLevelScript();
         }
         
@@ -42,16 +39,9 @@ public class SceneBootstrap : MonoBehaviour
         {
             if (soundManagerPrefab != null)
             {
-                Debug.Log("[Bootstrap] Creating SoundManager");
                 Instantiate(soundManagerPrefab);
             }
-            else
-            {
-                Debug.LogWarning("[Bootstrap] SoundManager Prefab not set! Audio will be unavailable.");
-            }
         }
-        
-        Debug.Log("[Bootstrap] Scene initialization complete");
     }
     
     void CreateEmptyGameManager()

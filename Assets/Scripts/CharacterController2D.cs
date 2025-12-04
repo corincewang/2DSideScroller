@@ -50,11 +50,8 @@ public class CharacterController2D : MonoBehaviour
 
     void Update()
     {
-        bool levelCompleted = LevelScript.Larry != null && LevelScript.Larry.levelCompleted;
-        bool countdownActive = false;
-        UIManager uiManager = FindObjectOfType<UIManager>();
-        if (uiManager != null)
-            countdownActive = uiManager.isCountdownActive;
+        bool levelCompleted = LevelScript.Larry != null ? LevelScript.Larry.levelCompleted : false;
+        bool countdownActive = GameManager.Gary != null ? GameManager.Gary.isCountdownActive : false;
         
         if (transform.position.y < deathY && isAlive)
         {
@@ -114,11 +111,8 @@ public class CharacterController2D : MonoBehaviour
 
     void FixedUpdate()
     {
-        bool levelCompleted = LevelScript.Larry != null && LevelScript.Larry.levelCompleted;
-        bool countdownActive = false;
-        UIManager uiManager = FindObjectOfType<UIManager>();
-        if (uiManager != null)
-            countdownActive = uiManager.isCountdownActive;
+        bool levelCompleted = LevelScript.Larry != null ? LevelScript.Larry.levelCompleted : false;
+        bool countdownActive = GameManager.Gary != null ? GameManager.Gary.isCountdownActive : false;
         
         isGrounded = false;
 

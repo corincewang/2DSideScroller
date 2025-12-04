@@ -39,6 +39,16 @@ public class SoundManager : MonoBehaviour
         PlayBackgroundMusicForCurrentScene();
     }
     
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+    
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+    
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         PlayBackgroundMusicForCurrentScene();
@@ -52,7 +62,6 @@ public class SoundManager : MonoBehaviour
         string sceneName = SceneManager.GetActiveScene().name;
         AudioClip musicToPlay = null;
         
-        // 根据场景名称选择背景音乐
         if (sceneName == "level1" && level1BackgroundMusic != null)
         {
             musicToPlay = level1BackgroundMusic;
@@ -70,7 +79,6 @@ public class SoundManager : MonoBehaviour
             musicToPlay = bossBackgroundMusic;
         }
         
-        // 播放或切换音乐
         if (musicToPlay != null && thisAudio.clip != musicToPlay)
         {
             thisAudio.Stop();

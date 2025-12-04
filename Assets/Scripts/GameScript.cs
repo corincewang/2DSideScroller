@@ -1,17 +1,29 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro;
+using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
+    private int score;
+    private int livesRemaining = 3;
+    
     public static GameManager Gary;
     
-    public int score;
-    public int maxLives = 3;
-    public int currentLives = 3;
     public bool isGameOver;
+    public bool isCountdownActive;
     public float respawnDelay = 1f;
     public Vector3 spawnPoint;
     public float checkpointX = 60f;
+    public float timeLimit = 120f;
+    
+    public TextMeshProUGUI messageOverlay;
+    public TextMeshProUGUI scoreDisplay;
+    public TextMeshProUGUI livesDisplay;
+    public TextMeshProUGUI timerDisplay;
+    
+    private float currentTime;
+    private bool isTimerRunning;
     
     public System.Action OnPlayerRespawn;
     
@@ -19,7 +31,7 @@ public class GameManager : MonoBehaviour
     
     void Awake()
     {
-        if (Gary && Gary != this)
+        if (Gary)
             Destroy(gameObject);
         else
         {
@@ -32,21 +44,84 @@ public class GameManager : MonoBehaviour
     {
         player = GameObject.FindGameObjectWithTag("Player");
         spawnPoint = player.transform.position;
-        currentLives = maxLives;
+        LevelStarted();
     }
     
-    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    public void LevelStarted()
     {
         player = GameObject.FindGameObjectWithTag("Player");
         spawnPoint = player.transform.position;
-        currentLives = maxLives;
+        livesRemaining = 3;
         isGameOver = false;
+        currentTime = 0;
+        isTimerRunning = false;
+        StartCoroutine(GetReady());
+    }
+    
+    public IEnumerator GetReady()
+    {
+        isCountdownActive = true;
+        yield return new WaitForSeconds(0.1f);
+        
+        if (messageOverlay)
+        {
+            string[] countdownMessages = { "3", "2", "1", "GO!" };
+            
+            for (int i = 0; i < countdownMessages.Length; i++)
+            {
+                messageOverlay.text = countdownMessages[i];
+                messageOverlay.enabled = true;
+                yield return new WaitForSeconds(0.5f);
+                messageOverlay.enabled = false;
+                yield return new WaitForSeconds(0.5f);
+            }
+            
+            messageOverlay.enabled = false;
+        }
+        
+        isCountdownActive = false;
+        isTimerRunning = true;
     }
     
     void Update()
     {
         if (player != null && player.transform.position.x >= checkpointX)
             spawnPoint = new Vector3(checkpointX, spawnPoint.y, 0);
+            
+        UpdateScoreDisplay();
+        UpdateLivesDisplay();
+        UpdateTimer();
+    }
+    
+    private void UpdateScoreDisplay()
+    {
+        if (scoreDisplay)
+            scoreDisplay.text = "Score: " + score;
+    }
+    
+    private void UpdateLivesDisplay()
+    {
+        if (livesDisplay)
+            livesDisplay.text = "Lives: " + livesRemaining;
+    }
+    
+    private void UpdateTimer()
+    {
+        if (isTimerRunning)
+        {
+            currentTime += Time.deltaTime;
+            if (currentTime >= timeLimit)
+            {
+                isTimerRunning = false;
+                TimeUp();
+            }
+            
+            if (timerDisplay)
+            {
+                float time = Mathf.Max(0, timeLimit - currentTime);
+                timerDisplay.text = "Time: " + Mathf.FloorToInt(time) + "s";
+            }
+        }
     }
     
     public void PlayerDeath(GameObject p)
@@ -55,18 +130,28 @@ public class GameManager : MonoBehaviour
         
         player = p;
         p.SetActive(false);
-        currentLives--;
+        livesRemaining--;
         
-        if (currentLives > 0)
-        {
-            FindObjectOfType<UIManager>().ShowOops();
-            Invoke(nameof(RespawnPlayer), respawnDelay);
-        }
+        if (livesRemaining > 0)
+            StartCoroutine(OopsState());
         else
         {
             isGameOver = true;
-            Invoke(nameof(ShowGameOver), respawnDelay);
+            StartCoroutine(GameOverLoseState());
         }
+    }
+    
+    IEnumerator OopsState()
+    {
+        if (messageOverlay)
+        {
+            messageOverlay.enabled = true;
+            messageOverlay.text = "Oops!";
+        }
+        yield return new WaitForSeconds(respawnDelay);
+        
+        RespawnPlayer();
+        if (messageOverlay) messageOverlay.enabled = false;
     }
     
     void RespawnPlayer()
@@ -84,9 +169,18 @@ public class GameManager : MonoBehaviour
         OnPlayerRespawn?.Invoke();
     }
     
-    void ShowGameOver()
+    IEnumerator GameOverLoseState()
     {
-        FindObjectOfType<UIManager>().ShowGameOver();
+        isGameOver = true;
+        
+        if (messageOverlay)
+        {
+            messageOverlay.enabled = true;
+            messageOverlay.text = "Game Over! \nScore: " + score;
+        }
+        
+        yield return new WaitForSeconds(3f);
+        if (messageOverlay) messageOverlay.enabled = false;
     }
     
     public void TimeUp()
@@ -96,19 +190,20 @@ public class GameManager : MonoBehaviour
         controller.isAlive = false;
         controller.GetComponent<Collider2D>().enabled = false;
         controller.animator.SetTrigger("Death");
-        Invoke(nameof(ShowGameOver), respawnDelay);
+        StartCoroutine(GameOverLoseState());
     }
     
     public void AddScore(int points)
     {
         score += points;
+        UpdateScoreDisplay();
     }
     
     public void RestartLevel()
     {
         isGameOver = false;
-        currentLives = maxLives;
         score = 0;
+        livesRemaining = 3;
         if (LevelScript.Larry != null)
             LevelScript.Larry.RestartLevel();
     }
