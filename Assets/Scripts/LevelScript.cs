@@ -30,11 +30,8 @@ public class LevelScript : MonoBehaviour
     
     IEnumerator LevelWin()
     {
-        if (GameManager.Gary && GameManager.Gary.messageOverlay)
-        {
-            GameManager.Gary.messageOverlay.enabled = true;
-            GameManager.Gary.messageOverlay.text = "Level Cleared!!";
-        }
+        GameManager.Gary.messageOverlay.enabled = true;
+        GameManager.Gary.messageOverlay.text = "Level Cleared!!";
         
         if (SoundManager.Steve)
         {
@@ -53,7 +50,7 @@ public class LevelScript : MonoBehaviour
     
     public void RestartLevel()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        SceneManager.LoadScene("level1");
     }
     
     void OnTriggerEnter2D(Collider2D col)

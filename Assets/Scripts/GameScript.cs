@@ -6,7 +6,7 @@ using System.Collections;
 public class GameManager : MonoBehaviour
 {
     private int score;
-    private int livesRemaining = 3;
+    public int livesRemaining = 3;
     
     public static GameManager Gary;
     
@@ -181,6 +181,8 @@ public class GameManager : MonoBehaviour
         
         yield return new WaitForSeconds(3f);
         if (messageOverlay) messageOverlay.enabled = false;
+        
+        SceneManager.LoadScene("MenuScene");
     }
     
     public void TimeUp()
@@ -197,14 +199,5 @@ public class GameManager : MonoBehaviour
     {
         score += points;
         UpdateScoreDisplay();
-    }
-    
-    public void RestartLevel()
-    {
-        isGameOver = false;
-        score = 0;
-        livesRemaining = 3;
-        if (LevelScript.Larry != null)
-            LevelScript.Larry.RestartLevel();
     }
 }
