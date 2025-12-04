@@ -6,6 +6,7 @@ public class SoundManager : MonoBehaviour
     public static SoundManager Steve;
 
     [Header("Background Music Per Level")]
+    public AudioClip menuBackgroundMusic;
     public AudioClip level1BackgroundMusic;
     public AudioClip level2BackgroundMusic;
     public AudioClip level3BackgroundMusic;
@@ -39,15 +40,6 @@ public class SoundManager : MonoBehaviour
         PlayBackgroundMusicForCurrentScene();
     }
     
-    void OnEnable()
-    {
-        SceneManager.sceneLoaded += OnSceneLoaded;
-    }
-    
-    void OnDisable()
-    {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
     
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
@@ -56,38 +48,20 @@ public class SoundManager : MonoBehaviour
     
     void PlayBackgroundMusicForCurrentScene()
     {
-        if (thisAudio == null)
-            return;
-            
         string sceneName = SceneManager.GetActiveScene().name;
         AudioClip musicToPlay = null;
         
-        if (sceneName == "level1" && level1BackgroundMusic != null)
-        {
-            musicToPlay = level1BackgroundMusic;
-        }
-        else if (sceneName == "level2" && level2BackgroundMusic != null)
-        {
-            musicToPlay = level2BackgroundMusic;
-        }
-        else if (sceneName == "level3" && level3BackgroundMusic != null)
-        {
-            musicToPlay = level3BackgroundMusic;
-        }
-        else if (sceneName == "BossScene" && bossBackgroundMusic != null)
-        {
-            musicToPlay = bossBackgroundMusic;
-        }
+        if (sceneName == "MenuScene") musicToPlay = menuBackgroundMusic;
+        else if (sceneName == "level1") musicToPlay = level1BackgroundMusic;
+        else if (sceneName == "level2") musicToPlay = level2BackgroundMusic;
+        else if (sceneName == "level3") musicToPlay = level3BackgroundMusic;
+        else if (sceneName == "BossScene") musicToPlay = bossBackgroundMusic;
         
         if (musicToPlay != null && thisAudio.clip != musicToPlay)
         {
             thisAudio.Stop();
             thisAudio.clip = musicToPlay;
             thisAudio.loop = true;
-            thisAudio.Play();
-        }
-        else if (musicToPlay != null && !thisAudio.isPlaying)
-        {
             thisAudio.Play();
         }
     }
@@ -114,9 +88,6 @@ public class SoundManager : MonoBehaviour
     
     public void PlayLevelCompleteSound()
     {
-        if (levelCompleteSound != null)
-        {
-            thisAudio.PlayOneShot(levelCompleteSound);
-        }
+        thisAudio.PlayOneShot(levelCompleteSound);
     }
 }
