@@ -55,6 +55,10 @@ public class GameManager : MonoBehaviour
         isGameOver = false;
         currentTime = 0;
         isTimerRunning = false;
+        
+        if (SoundManager.Steve)
+            SoundManager.Steve.PlayBackgroundMusicForCurrentScene();
+        
         StartCoroutine(GetReady());
     }
     

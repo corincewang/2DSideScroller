@@ -40,13 +40,7 @@ public class SoundManager : MonoBehaviour
         PlayBackgroundMusicForCurrentScene();
     }
     
-    
-    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        PlayBackgroundMusicForCurrentScene();
-    }
-    
-    void PlayBackgroundMusicForCurrentScene()
+    public void PlayBackgroundMusicForCurrentScene()
     {
         string sceneName = SceneManager.GetActiveScene().name;
         AudioClip musicToPlay = null;
@@ -55,7 +49,7 @@ public class SoundManager : MonoBehaviour
         else if (sceneName == "level1") musicToPlay = level1BackgroundMusic;
         else if (sceneName == "level2") musicToPlay = level2BackgroundMusic;
         else if (sceneName == "level3") musicToPlay = level3BackgroundMusic;
-        else if (sceneName == "BossScene") musicToPlay = bossBackgroundMusic;
+        else if (sceneName == "level4") musicToPlay = bossBackgroundMusic;
         
         if (musicToPlay != null && thisAudio.clip != musicToPlay)
         {

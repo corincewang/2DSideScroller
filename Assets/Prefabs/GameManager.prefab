@@ -45,11 +45,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 245411e9be60a4156b8557bfc9861b4a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  livesRemaining: 3
   isGameOver: 0
   isCountdownActive: 0
   respawnDelay: 1
   spawnPoint: {x: 0, y: 0, z: 0}
-  checkpointX: 60
+  checkpointX: 58
   timeLimit: 120
   messageOverlay: {fileID: 1353110566183378363}
   scoreDisplay: {fileID: 3311401013729179674}

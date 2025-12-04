@@ -12,8 +12,8 @@ public class LevelScript : MonoBehaviour
     public bool levelCompleted;
     
     void Awake()
-    {
-        Larry = this;
+        {
+            Larry = this;
     }
     
     void Start()
@@ -34,7 +34,7 @@ public class LevelScript : MonoBehaviour
         GameManager.Gary.messageOverlay.text = "Level Cleared!!";
         
         if (SoundManager.Steve)
-        {
+    {
             SoundManager.Steve.GetComponent<AudioSource>().Stop();
             SoundManager.Steve.PlayLevelCompleteSound();
         }
@@ -57,7 +57,7 @@ public class LevelScript : MonoBehaviour
     {
         if (col.CompareTag("Player"))
             CompleteLevel();
-    }
+        }
     
     void OnDestroy()
     {
