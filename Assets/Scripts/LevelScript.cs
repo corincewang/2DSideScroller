@@ -34,7 +34,7 @@ public class LevelScript : MonoBehaviour
         GameManager.Gary.messageOverlay.text = "Level Cleared!!";
         
         if (SoundManager.Steve)
-    {
+        {
             SoundManager.Steve.GetComponent<AudioSource>().Stop();
             SoundManager.Steve.PlayLevelCompleteSound();
         }
@@ -55,7 +55,7 @@ public class LevelScript : MonoBehaviour
     
     void OnTriggerEnter2D(Collider2D col)
     {
-        if (col.CompareTag("Player"))
+        if (col.transform.tag == "Player")
             CompleteLevel();
         }
     

@@ -42,30 +42,7 @@ public class GameManager : MonoBehaviour
     
     void Start()
     {
-        SceneManager.sceneLoaded += OnSceneLoaded;
-        CheckAndResetForMenu();
-    }
-    
-    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        CheckAndResetForMenu();
-    }
-    
-    void CheckAndResetForMenu()
-    {
-        bool isMenu = SceneManager.GetActiveScene().name == "MenuScene";
-        
-        if (isMenu)
-        {
-            ResetGameState();
-            if (SoundManager.Steve)
-                SoundManager.Steve.PlayBackgroundMusicForCurrentScene();
-        }
-        
-        if (scoreDisplay) scoreDisplay.enabled = !isMenu;
-        if (livesDisplay) livesDisplay.enabled = !isMenu;
-        if (timerDisplay) timerDisplay.enabled = !isMenu;
-        if (messageOverlay) messageOverlay.enabled = false;
+        ResetGameState();
     }
     
     public void LevelStarted()
@@ -283,6 +260,5 @@ public class GameManager : MonoBehaviour
     
     void OnDestroy()
     {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 }
