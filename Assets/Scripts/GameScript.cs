@@ -249,9 +249,9 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene("MenuScene");
     }
     
-    public void AddScore()
+    public void AddScore(int points)
     {
-        score += 2;
+        score += points;
     }
     
     public void ResetGameState()

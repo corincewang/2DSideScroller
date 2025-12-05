@@ -72,7 +72,7 @@ public class EnemyScript : MonoBehaviour
                 SoundManager.Steve.PlayEnemyHitSound();
             
             if (GameManager.Gary != null)
-                GameManager.Gary.AddScore();
+                GameManager.Gary.AddScore(2);
             
             Destroy(gameObject, 0.6f);
         }
