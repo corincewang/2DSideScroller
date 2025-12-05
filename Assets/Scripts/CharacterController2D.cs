@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -15,16 +14,12 @@ public class CharacterController2D : MonoBehaviour
     private Rigidbody2D rb;
     private InputAction moveAction, jumpAction;
     private float moveDirection;
-    private float jumpInputLockTime = 0f;
-    public float jumpLockDuration = 0.1f;
 
     [Header("Ground Detection")]
     public bool isGrounded = false;
     public float groundCheckRadius;
     public Vector2 groundCheckOffset;
-    public LayerMask groundLayerMask;
 
-    [Header("CharacterSprites and Animation")]
     public Animator animator;
     public bool facingRight = true;
     public bool isAlive = true;
@@ -37,15 +32,10 @@ public class CharacterController2D : MonoBehaviour
             animator = GetComponentInChildren<Animator>();
         }
 
-        rb.freezeRotation = true;
-        rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         rb.gravityScale = gravityScale;
 
         moveAction = InputSystem.actions.FindAction("Move");
         jumpAction = InputSystem.actions.FindAction("Jump");
-        
-        moveAction.Enable();
-        jumpAction.Enable();
     }
 
     void Update()
@@ -58,7 +48,7 @@ public class CharacterController2D : MonoBehaviour
             isAlive = false;
             animator.SetTrigger("Death");
             GetComponent<Collider2D>().enabled = false;
-            GameManager.Gary.PlayerDeath(gameObject);
+            GameManager.Gary.PlayerDeath();
         }
         
         if (jumpAction.WasPressedThisFrame() && isGrounded && isAlive && !levelCompleted)
@@ -66,22 +56,17 @@ public class CharacterController2D : MonoBehaviour
             rb.linearVelocityY = jumpHeight;
             if (SoundManager.Steve != null)
                 SoundManager.Steve.PlayJumpSound();
+                
             animator.SetBool("Grounded", false);
             animator.SetTrigger("JumpTrigger");
-            jumpInputLockTime = jumpLockDuration;
-            moveDirection = 0;
         }
         else
         {
             animator.SetBool("Grounded", isGrounded);
         }
 
-        if (jumpInputLockTime > 0)
-        {
-            jumpInputLockTime -= Time.deltaTime;
-            moveDirection = 0;
-        }
-        else if (isAlive && !levelCompleted && !countdownActive)
+
+        if (isAlive && !levelCompleted && !countdownActive)
         {
             moveDirection = moveAction.ReadValue<Vector2>().x;
         }
@@ -111,13 +96,10 @@ public class CharacterController2D : MonoBehaviour
 
     void FixedUpdate()
     {
-        bool levelCompleted = LevelScript.Larry != null ? LevelScript.Larry.levelCompleted : false;
-        bool countdownActive = GameManager.Gary != null ? GameManager.Gary.isCountdownActive : false;
-        
         isGrounded = false;
 
         Vector3 groundCheckPos = transform.position + (Vector3)groundCheckOffset;
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(groundCheckPos, groundCheckRadius, groundLayerMask);
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(groundCheckPos, groundCheckRadius);
 
         foreach (Collider2D col in colliders)
         {
@@ -142,11 +124,6 @@ public class CharacterController2D : MonoBehaviour
             }
         }
 
-        if (levelCompleted || countdownActive)
-        {
-            moveDirection = 0;
-        }
-
         rb.linearVelocityX = moveDirection * speed;
     }
 
@@ -164,6 +141,7 @@ public class CharacterController2D : MonoBehaviour
         Vector3 groundCheck = groundCheckOffset;
         Gizmos.DrawWireSphere(transform.position + groundCheck, groundCheckRadius);
     }
+
 
     void OnCollisionEnter2D(Collision2D collision)
     {
@@ -190,7 +168,8 @@ public class CharacterController2D : MonoBehaviour
                 GetComponent<Collider2D>().enabled = false;
                 if (SoundManager.Steve != null)
                     SoundManager.Steve.PlayDeathSound();
-                GameManager.Gary.PlayerDeath(gameObject);
+                    
+                GameManager.Gary.PlayerDeath();
             }
         }
     }

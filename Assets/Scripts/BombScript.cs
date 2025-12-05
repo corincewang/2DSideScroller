@@ -17,7 +17,7 @@ public class BombScript : MonoBehaviour
     {
         if (collision.transform.tag == "Player")
         {
-            GameManager.Gary.PlayerDeath(collision.gameObject);
+            GameManager.Gary.PlayerDeath();
             Destroy(this.gameObject);
         }
     }

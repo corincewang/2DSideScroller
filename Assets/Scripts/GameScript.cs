@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
     public bool isCountdownActive;
     public float respawnDelay = 1f;
     public Vector3 spawnPoint;
-    public float checkpointX = 60f;
+    public float checkpointX;
     public float timeLimit = 120f;
     
     public TextMeshProUGUI messageOverlay;
@@ -24,8 +24,6 @@ public class GameManager : MonoBehaviour
     
     private float currentTime;
     private bool isTimerRunning;
-    
-    public System.Action OnPlayerRespawn;
     
     private GameObject player;
     
@@ -80,7 +78,7 @@ public class GameManager : MonoBehaviour
             }
             
             string[] countdownMessages = { "3", "2", "1", "GO!" };
-            for (int i = 0; i < countdownMessages.Length; i++)
+            for (int i = 0; i < 4; i++)
             {
                 messageOverlay.text = countdownMessages[i];
                 messageOverlay.enabled = true;
@@ -106,12 +104,18 @@ public class GameManager : MonoBehaviour
     
     void UpdateScoreDisplay()
     {
-        if (scoreDisplay) scoreDisplay.text = "Score: " + score;
+        if (scoreDisplay)
+        {
+            scoreDisplay.text = "Score: " + score;
+        }
     }
     
     void UpdateLivesDisplay()
     {
-        if (livesDisplay) livesDisplay.text = "Lives: " + livesRemaining;
+        if (livesDisplay)
+        {
+            livesDisplay.text = "Lives: " + livesRemaining;
+        }
     }
     
     private void UpdateTimer()
@@ -132,12 +136,11 @@ public class GameManager : MonoBehaviour
         }
     }
     
-    public void PlayerDeath(GameObject p)
+    public void PlayerDeath()
     {
         if (isGameOver) return;
         
-        player = p;
-        p.SetActive(false);
+        player.SetActive(false);
         livesRemaining--;
         
         if (livesRemaining > 0)
@@ -162,6 +165,8 @@ public class GameManager : MonoBehaviour
         if (messageOverlay) messageOverlay.enabled = false;
     }
     
+
+    
     void RespawnPlayer()
     {
         player.SetActive(true);
@@ -169,12 +174,14 @@ public class GameManager : MonoBehaviour
         
         CharacterController2D controller = player.GetComponent<CharacterController2D>();
         controller.isAlive = true;
-        controller.GetComponent<Collider2D>().enabled = true;
+        player.GetComponent<Collider2D>().enabled = true;
+        player.GetComponent<Rigidbody2D>().linearVelocity = Vector2.zero;
         
-        Rigidbody2D rb = player.GetComponent<Rigidbody2D>();
-        rb.linearVelocity = Vector2.zero;
-        
-        OnPlayerRespawn?.Invoke();
+        FerryPlatform[] platforms = FindObjectsOfType<FerryPlatform>();
+        foreach (FerryPlatform platform in platforms)
+        {
+            platform.ResetPlatform();
+        }
     }
     
     IEnumerator GameOverLoseState()
@@ -193,7 +200,7 @@ public class GameManager : MonoBehaviour
             SoundManager.Steve.GetComponent<AudioSource>().Stop();
         }
         
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(5f);
         if (messageOverlay) messageOverlay.enabled = false;
         
         SceneManager.LoadScene("MenuScene");
@@ -204,6 +211,7 @@ public class GameManager : MonoBehaviour
         isGameOver = true;
         int sceneIndex = SceneManager.GetActiveScene().buildIndex;
         
+        //if currently in boss level and time up, player win
         if (sceneIndex == 3)
         {
             StartCoroutine(BossWinState());
@@ -241,24 +249,21 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene("MenuScene");
     }
     
-    public void AddScore(int points)
+    public void AddScore()
     {
-        score += points;
+        score += 2;
     }
     
     public void ResetGameState()
     {
+        //reset all game state when start from menu
         score = 0;
         livesRemaining = 3;
         isGameOver = false;
         isCountdownActive = false;
         currentTime = 0;
         isTimerRunning = false;
-        timeLimit = 120f;
         player = null;
     }
-    
-    void OnDestroy()
-    {
-    }
+
 }

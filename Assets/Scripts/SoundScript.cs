@@ -25,7 +25,7 @@ public class SoundManager : MonoBehaviour
     {
         if (Steve && Steve != this)
         {
-            Destroy(this.gameObject);
+            Destroy(gameObject);
         }
         else
         {
@@ -37,7 +37,6 @@ public class SoundManager : MonoBehaviour
 
     void Start()
     {
-        PlayBackgroundMusicForCurrentScene();
     }
     
     public void PlayBackgroundMusicForCurrentScene()
@@ -51,15 +50,11 @@ public class SoundManager : MonoBehaviour
         else if (sceneName == "level3") musicToPlay = level3BackgroundMusic;
         else if (sceneName == "level4") musicToPlay = bossBackgroundMusic;
         
-        if (musicToPlay != null)
+        if (musicToPlay != null && (thisAudio.clip != musicToPlay || !thisAudio.isPlaying))
         {
-            if (thisAudio.clip != musicToPlay || !thisAudio.isPlaying)
-            {
-                thisAudio.Stop();
-                thisAudio.clip = musicToPlay;
-                thisAudio.loop = true;
-                thisAudio.Play();
-            }
+            thisAudio.Stop();
+            thisAudio.clip = musicToPlay;
+            thisAudio.Play();
         }
     }
 

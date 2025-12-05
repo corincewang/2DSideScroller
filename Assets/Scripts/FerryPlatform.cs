@@ -21,27 +21,6 @@ public class FerryPlatform : MonoBehaviour
         
         transform.position = initialPosition;
         transform.rotation = initialRotation;
-        
-        if (GameManager.Gary != null)
-        {
-            GameManager.Gary.OnPlayerRespawn += ResetPlatform;
-        }
-    }
-    
-    void OnEnable()
-    {
-        if (GameManager.Gary != null)
-        {
-            GameManager.Gary.OnPlayerRespawn += ResetPlatform;
-        }
-    }
-    
-    void OnDisable()
-    {
-        if (GameManager.Gary != null)
-        {
-            GameManager.Gary.OnPlayerRespawn -= ResetPlatform;
-        }
     }
 
     void OnTriggerEnter2D(Collider2D collision)

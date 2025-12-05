@@ -8,7 +8,7 @@ public class StarScript : MonoBehaviour
     {
         if (collision.gameObject.transform.tag == "Player")
         {
-            GameManager.Gary.AddScore(starValue);
+            GameManager.Gary.AddScore();
             if (SoundManager.Steve != null)
                 SoundManager.Steve.PlayStarSound();
             Destroy(gameObject);

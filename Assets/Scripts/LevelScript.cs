@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using TMPro;
 using System.Collections;
 
 public class LevelScript : MonoBehaviour
@@ -12,14 +11,13 @@ public class LevelScript : MonoBehaviour
     public bool levelCompleted;
     
     void Awake()
-        {
-            Larry = this;
+    {
+        Larry = this;
     }
     
     void Start()
     {
-        if (GameManager.Gary != null)
-            GameManager.Gary.LevelStarted();
+        GameManager.Gary.LevelStarted();
     }
     
     public void CompleteLevel()
@@ -39,7 +37,7 @@ public class LevelScript : MonoBehaviour
             SoundManager.Steve.PlayLevelCompleteSound();
         }
         
-        yield return new WaitForSeconds(4f);
+        yield return new WaitForSeconds(5f);
         LoadNextLevel();
     }
     
@@ -48,21 +46,19 @@ public class LevelScript : MonoBehaviour
         SceneManager.LoadScene(nextLevel);
     }
     
-    public void RestartLevel()
-    {
-        SceneManager.LoadScene("level1");
-    }
-    
     void OnTriggerEnter2D(Collider2D col)
     {
-        if (col.transform.tag == "Player")
+        if (col.transform.tag == "Player"){
             CompleteLevel();
         }
+            
+    }
     
     void OnDestroy()
     {
-        if (Larry == this)
+        if (Larry == this){
             Larry = null;
+        }
     }
 }
 
