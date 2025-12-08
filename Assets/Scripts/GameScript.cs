@@ -53,7 +53,7 @@ public class GameManager : MonoBehaviour
         isTimerRunning = false;
         
         int sceneIndex = SceneManager.GetActiveScene().buildIndex;
-        timeLimit = sceneIndex == 3 ? 30f : 120f;
+        timeLimit = sceneIndex == 4 ? 30f : 120f;
         
         if (SoundManager.Steve)
             SoundManager.Steve.PlayBackgroundMusicForCurrentScene();
@@ -68,7 +68,7 @@ public class GameManager : MonoBehaviour
         if (messageOverlay)
         {
             int sceneIndex = SceneManager.GetActiveScene().buildIndex;
-            if (sceneIndex == 3)
+            if (sceneIndex == 4)
             {
                 messageOverlay.text = "Survive 30s!";
                 messageOverlay.enabled = true;
@@ -212,7 +212,7 @@ public class GameManager : MonoBehaviour
         int sceneIndex = SceneManager.GetActiveScene().buildIndex;
         
         //if currently in boss level and time up, player win
-        if (sceneIndex == 3)
+        if (sceneIndex == 4)
         {
             StartCoroutine(BossWinState());
         }
