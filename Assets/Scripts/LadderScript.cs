@@ -10,6 +10,7 @@ public class LadderScript : MonoBehaviour
     private bool isClimbing;
     private Rigidbody2D rb;
     
+    // used guidance from youtube: https://www.youtube.com/watch?v=yyg0yV2roPk by bendux
     void Update()
     {
         vertical = InputSystem.actions.FindAction("Move").ReadValue<Vector2>().y;
