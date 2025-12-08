@@ -98,32 +98,11 @@ public class CharacterController2D : MonoBehaviour
     {
         isGrounded = false;
 
-        Vector3 groundCheckPos = transform.position + (Vector3)groundCheckOffset;
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(groundCheckPos, groundCheckRadius);
-
-        foreach (Collider2D col in colliders)
-        {
-            Bounds bounds = col.bounds;
-            bool isPlatformEffector = col.GetComponent<PlatformEffector2D>() != null;
-            bool playerAbovePlatform = transform.position.y >= bounds.max.y;
-            
-            if (isPlatformEffector && !playerAbovePlatform)
-            {
-                isGrounded = true;
-                break;
-            }
-            
-            if (playerAbovePlatform)
-            {
-                Vector2 closestPoint = col.ClosestPoint(groundCheckPos);
-                if (closestPoint.y <= groundCheckPos.y + 0.1f)
-                {
-                    isGrounded = true;
-                    break;
-                }
-            }
-        }
-
+        Vector3 groundCheck = groundCheckOffset;
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position + groundCheck, groundCheckRadius);
+        
+        if (colliders.Length > 0) { isGrounded = true; }
+        
         rb.linearVelocityX = moveDirection * speed;
     }
 
