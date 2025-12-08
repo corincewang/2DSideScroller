@@ -20,6 +20,7 @@ public class MenuScript : MonoBehaviour
             
     }
     
+    // most menuscript referred to AstralAttacker's menuScipt
     public void btn_StartTheGame()
     {
         if (GameManager.Gary != null)

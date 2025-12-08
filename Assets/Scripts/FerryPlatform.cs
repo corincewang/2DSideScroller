@@ -10,22 +10,12 @@ public class FerryPlatform : MonoBehaviour
     {
         initialPosition = transform.position;
         initialRotation = transform.rotation;
-        
         animator = GetComponent<Animator>();
-        
-        if (animator != null)
-        {
-            animator.Rebind();
-            animator.Update(0f);
-        }
-        
-        transform.position = initialPosition;
-        transform.rotation = initialRotation;
     }
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.tag == "Player")
+        if (collision.CompareTag("Player"))
         {
             animator.SetTrigger("FerryStart");
         }
