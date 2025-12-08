@@ -52,6 +52,10 @@ public class GameManager : MonoBehaviour
         currentTime = 0;
         isTimerRunning = false;
         
+        if (scoreDisplay) scoreDisplay.enabled = true;
+        if (livesDisplay) livesDisplay.enabled = true;
+        if (timerDisplay) timerDisplay.enabled = true;
+        
         int sceneIndex = SceneManager.GetActiveScene().buildIndex;
         timeLimit = sceneIndex == 4 ? 30f : 120f;
         
